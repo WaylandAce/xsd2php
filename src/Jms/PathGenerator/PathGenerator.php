@@ -4,5 +4,5 @@ namespace GoetasWebservices\Xsd\XsdToPhp\Jms\PathGenerator;
 
 interface PathGenerator
 {
-    public function getPath(string $yaml): string;
+    public function getPath($yaml): string;
 }

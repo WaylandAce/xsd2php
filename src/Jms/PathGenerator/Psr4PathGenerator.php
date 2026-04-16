@@ -7,7 +7,7 @@ use GoetasWebservices\Xsd\XsdToPhp\PathGenerator\Psr4PathGenerator as Psr4PathGe
 
 class Psr4PathGenerator extends Psr4PathGeneratorBase implements PathGenerator
 {
-    public function getPath(string $yaml): string
+    public function getPath($yaml): string
     {
         $ns = key($yaml);
 
