@@ -8,7 +8,7 @@ use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 
 abstract class AbstractNamingStrategy implements NamingStrategy
 {
-    protected $reservedWords = [
+    protected array $reservedWords = [
         '__halt_compiler',
         'abstract',
         'and',
@@ -88,7 +88,7 @@ abstract class AbstractNamingStrategy implements NamingStrategy
         'xor',
     ];
 
-    public function getItemName(Item $item)
+    public function getItemName(Item $item): string
     {
         $name = $this->classify($item->getName());
         if (in_array(strtolower($name), $this->reservedWords)) {
@@ -98,14 +98,14 @@ abstract class AbstractNamingStrategy implements NamingStrategy
         return $name;
     }
 
-    public function getPropertyName($item)
+    public function getPropertyName($item): string
     {
         $inflector = InflectorFactory::create()->build();
 
         return $inflector->camelize(str_replace('.', ' ', $item->getName()));
     }
 
-    protected function classify($name)
+    protected function classify($name): string
     {
         $inflector = InflectorFactory::create()->build();
 

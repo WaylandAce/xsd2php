@@ -11,11 +11,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('xsd2php');
 
-        if (method_exists($treeBuilder, 'getRootNode')) {
-            $rootNode = $treeBuilder->getRootNode();
-        } else {
-            $rootNode = $treeBuilder->root('xsd2php');
-        }
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

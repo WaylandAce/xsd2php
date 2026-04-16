@@ -20,7 +20,7 @@ class YamlValidatorConverter extends YamlConverter
      *
      * @return PHPClass[]
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         $classes = parent::getTypes();
 

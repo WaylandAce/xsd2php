@@ -12,10 +12,8 @@ use Symfony\Component\Yaml\Dumper;
 class JMSWriter extends Writer implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
-    /**
-     * @var PathGenerator
-     */
-    private $pathGenerator;
+
+    private PathGenerator $pathGenerator;
 
     public function __construct(PathGenerator $pathGenerator, ?LoggerInterface $logger = null)
     {
@@ -23,7 +21,7 @@ class JMSWriter extends Writer implements LoggerAwareInterface
         $this->logger = $logger ?: new NullLogger();
     }
 
-    public function write(array $items)
+    public function write(array $items): void
     {
         $dumper = new Dumper();
         foreach ($items as $item) {

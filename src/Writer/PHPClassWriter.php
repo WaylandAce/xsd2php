@@ -14,7 +14,7 @@ class PHPClassWriter implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    protected $pathGenerator;
+    protected PathGenerator $pathGenerator;
 
     public function __construct(PathGenerator $pathGenerator, ?LoggerInterface $logger = null)
     {
@@ -25,7 +25,7 @@ class PHPClassWriter implements LoggerAwareInterface
     /**
      * @param ClassGenerator[] $items
      */
-    public function write(array $items)
+    public function write(array $items): void
     {
         foreach ($items as $item) {
             $path = $this->pathGenerator->getPath($item);

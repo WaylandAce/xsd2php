@@ -15,10 +15,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class Convert extends Command
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
@@ -29,7 +26,7 @@ class Convert extends Command
     /**
      * @see Console\Command\Command
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('convert');
         $this->setDescription('Convert a XSD file into PHP classes and JMS serializer metadata files');
@@ -68,7 +65,7 @@ class Convert extends Command
         return count($items) ? 0 : 255;
     }
 
-    protected function loadConfigurations($configFile)
+    protected function loadConfigurations($configFile): void
     {
         $locator = new FileLocator('.');
         $yaml = new YamlFileLoader($this->container, $locator);

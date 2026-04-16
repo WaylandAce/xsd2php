@@ -31,6 +31,9 @@ use Psr\Log\LoggerInterface;
 
 class PhpConverter extends AbstractConverter
 {
+    private array $skipByType = [];
+    private array $classes = [];
+
     public function __construct(NamingStrategy $namingStrategy, ?LoggerInterface $loggerInterface = null)
     {
         parent::__construct($namingStrategy, $loggerInterface);
@@ -54,8 +57,6 @@ class PhpConverter extends AbstractConverter
             return 'string';
         });
     }
-
-    private $classes = [];
 
     public function convert(array $schemas): array
     {
@@ -191,8 +192,6 @@ class PhpConverter extends AbstractConverter
         }
     }
 
-    private $skipByType = [];
-
     /**
      * @param bool $skip
      *
@@ -237,7 +236,7 @@ class PhpConverter extends AbstractConverter
         return !empty($this->skipByType[spl_object_hash($class)]);
     }
 
-    private function findPHPName(Type $type)
+    private function findPHPName(Type $type): array
     {
         $schema = $type->getSchema();
 
@@ -276,7 +275,7 @@ class PhpConverter extends AbstractConverter
      *
      * @throws Exception
      */
-    public function visitType(Type $type, $force = false)
+    public function visitType(Type $type, bool $force = false): PHPClass
     {
         if (!isset($this->classes[spl_object_hash($type)])) {
             $skip = in_array($type->getSchema()->getTargetNamespace(), $this->baseSchemas, true);
@@ -329,7 +328,7 @@ class PhpConverter extends AbstractConverter
      *
      * @return PHPClass
      */
-    private function visitTypeAnonymous(Type $type, $name, PHPClass $parentClass)
+    private function visitTypeAnonymous(Type $type, $name, PHPClass $parentClass): PHPClass
     {
         if (!isset($this->classes[spl_object_hash($type)])) {
             $this->classes[spl_object_hash($type)]['class'] = $class = new PHPClass();
@@ -531,7 +530,7 @@ class PhpConverter extends AbstractConverter
         return $property;
     }
 
-    private function findPHPClass(PHPClass $class, Item $node, $force = false)
+    private function findPHPClass(PHPClass $class, Item $node, $force = false): PHPClass
     {
         if ($node instanceof ElementRef) {
             return $this->visitElementDef($node->getReferencedElement());

@@ -18,14 +18,14 @@ use Laminas\Code\Generator\ValueGenerator;
 
 class ClassGenerator
 {
-    private $strictTypes;
+    private bool $strictTypes;
 
     public function __construct(bool $strictTypes = false)
     {
         $this->strictTypes = $strictTypes;
     }
 
-    private function handleBody(Generator\ClassGenerator $class, PHPClass $type)
+    private function handleBody(Generator\ClassGenerator $class, PHPClass $type): bool
     {
         foreach ($type->getProperties() as $prop) {
             if ($prop->getName() !== '__value') {
@@ -45,7 +45,7 @@ class ClassGenerator
         return true;
     }
 
-    private function handleValueMethod(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class, $all = true)
+    private function handleValueMethod(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class, $all = true): void
     {
         $type = $prop->getType();
 
@@ -113,7 +113,7 @@ class ClassGenerator
         $generator->addMethodFromGenerator($method);
     }
 
-    private function handleSetter(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class)
+    private function handleSetter(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class): void
     {
         $methodBody = '';
         $docblock = new DocBlockGenerator();
@@ -194,7 +194,7 @@ class ClassGenerator
         $generator->addMethodFromGenerator($method);
     }
 
-    private function handleGetter(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class)
+    private function handleGetter(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class): void
     {
         $inflector = InflectorFactory::create()->build();
 
@@ -277,7 +277,7 @@ class ClassGenerator
         $generator->addMethodFromGenerator($method);
     }
 
-    private function handleAdder(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class)
+    private function handleAdder(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class): void
     {
         $type = $prop->getType();
         $propName = $type->getArg()->getName();
@@ -326,7 +326,7 @@ class ClassGenerator
         $generator->addMethodFromGenerator($method);
     }
 
-    private function handleMethod(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class)
+    private function handleMethod(Generator\ClassGenerator $generator, PHPProperty $prop, PHPClass $class): void
     {
         if ($prop->getType() instanceof PHPClassOf) {
             $this->handleAdder($generator, $prop, $class);
@@ -336,7 +336,7 @@ class ClassGenerator
         $this->handleSetter($generator, $prop, $class);
     }
 
-    private function handleProperty(Generator\ClassGenerator $class, PHPProperty $prop)
+    private function handleProperty(Generator\ClassGenerator $class, PHPProperty $prop): void
     {
         $generatedProp = new PropertyGenerator($prop->getName());
         $generatedProp->setVisibility(PropertyGenerator::VISIBILITY_PRIVATE);

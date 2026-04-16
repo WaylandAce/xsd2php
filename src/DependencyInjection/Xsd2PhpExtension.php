@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class Xsd2PhpExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $xml = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $xml->load('services.xml');
@@ -59,7 +59,7 @@ class Xsd2PhpExtension extends Extension
         $container->setParameter('goetas_webservices.xsd2php.config', $config);
     }
 
-    protected static function sanitizePhp($ns)
+    protected static function sanitizePhp(string $ns): string
     {
         return strtr($ns, '/', '\\');
     }

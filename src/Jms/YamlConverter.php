@@ -27,7 +27,7 @@ use GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClass;
 
 class YamlConverter extends AbstractConverter
 {
-    protected $useCdata = true;
+    protected bool $useCdata = true;
 
     public function __construct(NamingStrategy $namingStrategy)
     {
@@ -56,9 +56,9 @@ class YamlConverter extends AbstractConverter
         return $this;
     }
 
-    private $classes = [];
+    private array $classes = [];
 
-    public function convert(array $schemas)
+    public function convert(array $schemas): array
     {
         $visited = [];
         $this->classes = [];
@@ -69,7 +69,7 @@ class YamlConverter extends AbstractConverter
         return $this->getTypes();
     }
 
-    private function flattAttributes(AttributeContainer $container)
+    private function flattAttributes(AttributeContainer $container): array
     {
         $items = [];
         foreach ($container->getAttributes() as $attr) {
@@ -83,7 +83,7 @@ class YamlConverter extends AbstractConverter
         return $items;
     }
 
-    private function flattElements(ElementContainer $container)
+    private function flattElements(ElementContainer $container): array
     {
         $items = [];
         foreach ($container->getElements() as $attr) {
@@ -100,7 +100,7 @@ class YamlConverter extends AbstractConverter
     /**
      * @return PHPClass[]
      */
-    public function getTypes()
+    public function getTypes(): array
     {
         uasort($this->classes, function ($a, $b) {
             return strcmp(key($a), key($b));
@@ -119,7 +119,7 @@ class YamlConverter extends AbstractConverter
         return $ret;
     }
 
-    private function navigate(Schema $schema, array &$visited)
+    private function navigate(Schema $schema, array &$visited): void
     {
         if (isset($visited[spl_object_hash($schema)])) {
             return;
@@ -140,7 +140,7 @@ class YamlConverter extends AbstractConverter
         }
     }
 
-    private function visitTypeBase(&$class, &$data, Type $type, $name)
+    private function visitTypeBase(&$class, &$data, Type $type, $name): void
     {
         if ($type instanceof BaseComplexType) {
             $this->visitBaseComplexType($class, $data, $type, $name);

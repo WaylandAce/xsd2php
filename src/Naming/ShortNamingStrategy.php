@@ -7,7 +7,7 @@ use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 
 class ShortNamingStrategy extends AbstractNamingStrategy
 {
-    public function getTypeName(Type $type)
+    public function getTypeName(Type $type): string
     {
         $name = $this->classify($type->getName());
         if ($name && substr($name, -4) !== 'Type') {
@@ -17,7 +17,7 @@ class ShortNamingStrategy extends AbstractNamingStrategy
         return $name;
     }
 
-    public function getAnonymousTypeName(Type $type, $parentName)
+    public function getAnonymousTypeName(Type $type, $parentName): string
     {
         return $this->classify($parentName) . 'AType';
     }
