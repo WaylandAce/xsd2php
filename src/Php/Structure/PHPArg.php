@@ -10,7 +10,7 @@ class PHPArg
 
     protected $name;
 
-    protected $nullable = false;
+    protected bool $nullable = false;
     
     protected $default;
 
@@ -59,12 +59,12 @@ class PHPArg
         return $this;
     }
 
-    public function getNullable()
+    public function getNullable(): bool
     {
         return $this->nullable;
     }
 
-    public function setNullable($nullable)
+    public function setNullable(bool $nullable): static
     {
         $this->nullable = $nullable;
         

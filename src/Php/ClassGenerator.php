@@ -50,7 +50,7 @@ class ClassGenerator
         $param = new ParameterGenerator('value');
         $param->setDefaultValue(null);
         if ($type) {
-            $param->setType($this->getTypeAsPhpString($type));
+            $param->setType($this->getTypeAsPhpString($type, $prop->getNullable()));
         } else {
             $docblock->setTag($paramTag);
         }
@@ -77,11 +77,10 @@ class ClassGenerator
             $parameter->setType('?array');
         } elseif ($type) {
             $paramTag->setTypes($prop->getType()->getPhpType());
-            $parameter->setType($this->getTypeAsPhpString($prop->getType()));
+            $parameter->setType($this->getTypeAsPhpString($prop->getType(), $prop->getNullable()));
         } else {
             $docblock->setTag($paramTag);
         }
-
 
         $method = new MethodGenerator('value', [$parameter]);
         $returnTag = new ReturnTag('mixed');
@@ -91,11 +90,10 @@ class ClassGenerator
             $method->setReturnType('?array');
             $docblock->setTag($returnTag);
         } elseif ($type) {
-            $method->setReturnType($this->getTypeAsPhpString($type));
+            $method->setReturnType($this->getTypeAsPhpString($type, $prop->getNullable()));
         } else {
             $docblock->setTag($returnTag);
         }
-
 
         $param = new ParameterGenerator('value');
         $param->setDefaultValue(null);
@@ -163,12 +161,12 @@ class ClassGenerator
             }
         } elseif ($type) {
             if ($type->isNativeType()) {
-                $parameter->setType($this->getTypeAsPhpString($type));
+                $parameter->setType($this->getTypeAsPhpString($type, $prop->getNullable()));
             } elseif ($p = $type->isSimpleType()) {
                 if (($t = $p->getType()) && !$t->isNativeType()) {
                     $parameter->setType($t->getPhpType());
                 } elseif ($t) {
-                    $parameter->setType($this->getTypeAsPhpString($t));
+                    $parameter->setType($this->getTypeAsPhpString($t, $prop->getNullable()));
                 }
             } else {
                 $parameter->setType(($prop->getNullable() ? '?' : '') . $type->getPhpType());
@@ -207,7 +205,6 @@ class ClassGenerator
             $paramIndex = new ParameterGenerator('index');
             $paramIndex->setType('int|string');
 
-
             $method = new MethodGenerator('isset' . $inflector->classify($prop->getName()), [$paramIndex]);
             $method->setDocBlock($docblock);
             $method->setBody('return isset($this->' . $prop->getName() . '[$index]);');
@@ -230,11 +227,9 @@ class ClassGenerator
             $method->setReturnType('void');
             $generator->addMethodFromGenerator($method);
         }
-        // ////
 
         $docblock = new DocBlockGenerator();
         $docblock->setWordWrap(false);
-
         $docblock->setShortDescription('Get the ' . $prop->getName());
 
         if ($prop->getDoc()) {
@@ -252,7 +247,6 @@ class ClassGenerator
             $tag->setTypes($tt->getPhpType() . '[]');
             $docblock->setTag($tag);
 
-
             if ($type->getArg()->getDefault() === []) {
                 $method->setReturnType('array');
             } else {
@@ -261,10 +255,10 @@ class ClassGenerator
         } elseif ($type) {
             if ($p = $type->isSimpleType()) {
                 if ($t = $p->getType()) {
-                    $method->setReturnType($this->getTypeAsPhpString($t));
+                    $method->setReturnType($this->getTypeAsPhpString($t, $prop->getNullable()));
                 }
             } else {
-                $method->setReturnType($this->getTypeAsPhpString($type));
+                $method->setReturnType($this->getTypeAsPhpString($type, $prop->getNullable()));
             }
         }
 
@@ -332,6 +326,10 @@ class ClassGenerator
         $generatedProp = new PropertyGenerator($prop->getName());
         $generatedProp->setVisibility(PropertyGenerator::VISIBILITY_PRIVATE);
 
+        if (!$prop->getNullable()) {
+            $generatedProp->omitDefaultValue(true);
+        }
+
         $class->addPropertyFromGenerator($generatedProp);
 
         $docBlock = new DocBlockGenerator();
@@ -362,11 +360,11 @@ class ClassGenerator
             $docBlock->setTag($tag);
         } elseif ($type) {
             if ($type->isNativeType()) {
-                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($type)));
+                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($type, $prop->getNullable())));
             } elseif (($p = $type->isSimpleType()) && ($t = $p->getType())) {
-                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($t)));
+                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($t, $prop->getNullable())));
             } else {
-                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($prop->getType())));
+                $generatedProp->setType(Generator\TypeGenerator::fromTypeString($this->getTypeAsPhpString($prop->getType(), $prop->getNullable())));
             }
         } else {
             $docBlock->setTag($tag);
@@ -417,8 +415,12 @@ class ClassGenerator
         }
     }
 
-    private function getTypeAsPhpString(PHPClass $type): string
+    private function getTypeAsPhpString(PHPClass $type, bool $nullable): string
     {
-        return ($type->getPhpType() === 'mixed' ? '' : '?') . $type->getPhpType();
+        if ($type->getPhpType() === 'mixed') {
+            return '' . $type->getPhpType();
+        }
+
+        return ($nullable ? '?' : '') . $type->getPhpType();
     }
 }
