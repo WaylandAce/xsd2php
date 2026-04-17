@@ -1,6 +1,6 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I40;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I43;
 
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Tests\Generator;
@@ -11,7 +11,7 @@ class I43Test extends TestCase
     /**
      * @group long
      */
-    public function testOpcGeneration()
+    public function testOpcGeneration(): void
     {
         $nss = [
             'http://schemas.openxmlformats.org/package/2006/metadata/core-properties' => 'Iag/ECMA376/Package/Model/CoreProperties',

@@ -25,7 +25,7 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
     public function testGroupArray()
     {
         $content = '
-             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
                 <xs:group name="EG_ExtensionList">
                     <xs:sequence>
                       <xs:element name="ext" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
@@ -33,7 +33,7 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
                 </xs:group>
                 <xs:complexType name="complexType-1">
                     <xs:sequence>
-                        <xs:group ref="EG_ExtensionList"/>
+                        <xs:group ref="ex:EG_ExtensionList"/>
                     </xs:sequence>
                 </xs:complexType>
                </xs:schema>
@@ -117,10 +117,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
     public function testSomeAnonymousWithRefs()
     {
         $content = '
-             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
+             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
                     <xs:complexType name="AddressBook">
                         <xs:sequence>
-                            <xs:element ref="Contacts" minOccurs="0"/>                                                            
+                            <xs:element ref="ex:Contacts" minOccurs="0"/>                                                            
                         </xs:sequence>
                     </xs:complexType>    
                     <xs:element name="Contacts">
@@ -153,14 +153,14 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
     public function testListOfRestriction()
     {
         $xml = '
-            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
+            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
             
                 <xs:simpleType name="JustRestriction">
                     <xs:restriction base="xs:float"/>
                 </xs:simpleType>            
                 
                 <xs:simpleType name="RestrictionOfJustRestriction">
-                    <xs:restriction base="JustRestriction"/>
+                    <xs:restriction base="ex:JustRestriction"/>
                 </xs:simpleType>               
                 
                 <xs:simpleType name="ListOfXSDFloats">
@@ -168,57 +168,57 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
                 </xs:simpleType>
 
                 <xs:simpleType name="ListOfJustRestriction">
-                    <xs:list itemType="JustRestriction"/>
+                    <xs:list itemType="ex:JustRestriction"/>
                 </xs:simpleType>
                 
                 <xs:simpleType name="ListOfRestrictionOfJustRestriction">
-                    <xs:list itemType="JustRestriction"/>
+                    <xs:list itemType="ex:JustRestriction"/>
                 </xs:simpleType>
                                             
                 <xs:simpleType name="ListOfListOfJustRestriction">
-                    <xs:restriction base="ListOfJustRestriction"/>
+                    <xs:restriction base="ex:ListOfJustRestriction"/>
                 </xs:simpleType>
                  <xs:complexType name="ComplexListOfXSDFloats">
                   <xs:simpleContent>
-                    <xs:extension base="ListOfXSDFloats"/>
+                    <xs:extension base="ex:ListOfXSDFloats"/>
                   </xs:simpleContent>
                 </xs:complexType>
                 
                 <xs:complexType name="ComplexListOfListOfJustRestriction">
                   <xs:simpleContent>
-                    <xs:extension base="ListOfListOfJustRestriction"/>
+                    <xs:extension base="ex:ListOfListOfJustRestriction"/>
                   </xs:simpleContent>
                 </xs:complexType>
                 
                  <xs:complexType name="ElementsCt">
                     <xs:sequence>
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfXSDFloats" type="ListOfXSDFloats"/>
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfJustRestriction" type="ListOfJustRestriction"/>
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfRestrictionOfJustRestriction" type="ListOfRestrictionOfJustRestriction"/>
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfListOfJustRestriction" type="ListOfListOfJustRestriction"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfXSDFloats" type="ex:ListOfXSDFloats"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfJustRestriction" type="ex:ListOfJustRestriction"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfRestrictionOfJustRestriction" type="ex:ListOfRestrictionOfJustRestriction"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttListOfListOfJustRestriction" type="ex:ListOfListOfJustRestriction"/>
                          
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttrComplexListOfXSDFloats" type="ComplexListOfXSDFloats"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttrComplexListOfXSDFloats" type="ex:ComplexListOfXSDFloats"/>
                          <xs:element minOccurs="1" maxOccurs="1" name="AttrAnonComplexListOfXSDFloats">
                               <xs:simpleType>
-                                <xs:restriction base="ListOfJustRestriction"/>
+                                <xs:restriction base="ex:ListOfJustRestriction"/>
                             </xs:simpleType>
                          </xs:element>
-                         <xs:element minOccurs="1" maxOccurs="1" name="AttrComplexListOfListOfJustRestriction" type="ComplexListOfListOfJustRestriction"/>
+                         <xs:element minOccurs="1" maxOccurs="1" name="AttrComplexListOfListOfJustRestriction" type="ex:ComplexListOfListOfJustRestriction"/>
                      </xs:sequence>
                 </xs:complexType>
                 
                 <xs:complexType name="Ct">
-                     <xs:attribute name="AttListOfXSDFloats" type="ListOfXSDFloats"/>
-                     <xs:attribute name="AttListOfJustRestriction" type="ListOfJustRestriction"/>
-                     <xs:attribute name="AttListOfRestrictionOfJustRestriction" type="ListOfRestrictionOfJustRestriction"/>
-                     <xs:attribute name="AttListOfListOfJustRestriction" type="ListOfListOfJustRestriction"/>
+                     <xs:attribute name="AttListOfXSDFloats" type="ex:ListOfXSDFloats"/>
+                     <xs:attribute name="AttListOfJustRestriction" type="ex:ListOfJustRestriction"/>
+                     <xs:attribute name="AttListOfRestrictionOfJustRestriction" type="ex:ListOfRestrictionOfJustRestriction"/>
+                     <xs:attribute name="AttListOfListOfJustRestriction" type="ex:ListOfListOfJustRestriction"/>
                      
-                     <xs:attribute name="AttrComplexListOfXSDFloats" type="ComplexListOfXSDFloats"/>
-                     <xs:attribute name="AttrComplexListOfListOfJustRestriction" type="ComplexListOfListOfJustRestriction"/>
+                     <xs:attribute name="AttrComplexListOfXSDFloats" type="ex:ComplexListOfXSDFloats"/>
+                     <xs:attribute name="AttrComplexListOfListOfJustRestriction" type="ex:ComplexListOfListOfJustRestriction"/>
                      
                      <xs:attribute name="AttrAnonComplexListOfXSDFloats">
                           <xs:simpleType>
-                            <xs:restriction base="ListOfJustRestriction"/>
+                            <xs:restriction base="ex:ListOfJustRestriction"/>
                         </xs:simpleType>
                      </xs:attribute>
                 </xs:complexType>
@@ -369,11 +369,11 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
     public function testGeneralParts()
     {
         $content = '
-             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">
                 <xs:group name="group-1">
                     <xs:sequence>
                         <xs:element name="group-1-el-1" type="xs:string"/>
-                        <xs:group ref="group-2"/>
+                        <xs:group ref="tns:group-2"/>
                     </xs:sequence>
                 </xs:group>
 
@@ -387,8 +387,8 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
 
                 <xs:attributeGroup name="attributeGroup-1">
                     <xs:attribute name="attributeGroup-1-att-1" type="xs:string"/>
-                    <xs:attribute ref="attribute-1" />
-                    <xs:attributeGroup ref="attributeGroup-2" />
+                    <xs:attribute ref="tns:attribute-1" />
+                    <xs:attributeGroup ref="tns:attributeGroup-2" />
                 </xs:attributeGroup>
 
                 <xs:attributeGroup name="attributeGroup-2">
@@ -398,13 +398,13 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
                 <xs:attribute name="attribute-1" type="xs:string"/>
 
                 <xs:complexType name="complexType-1">
-                     <xs:attribute ref="attribute-1"/>
+                     <xs:attribute ref="tns:attribute-1"/>
                      <xs:attribute name="attribute-2" type="xs:string"/>
-                     <xs:attributeGroup ref="attributeGroup-1"/>
+                     <xs:attributeGroup ref="tns:attributeGroup-1"/>
 
                      <xs:sequence>
-                            <xs:group ref="group-1"/>
-                            <xs:element ref="element-1"/>
+                            <xs:group ref="tns:group-1"/>
+                            <xs:element ref="tns:element-1"/>
                             <xs:element name="complexType-1-el-1" type="xs:string"/>
                      </xs:sequence>
                 </xs:complexType>

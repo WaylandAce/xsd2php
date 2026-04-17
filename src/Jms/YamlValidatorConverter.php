@@ -72,7 +72,7 @@ class YamlValidatorConverter extends YamlConverter
      *
      * @param bool $arrayized
      */
-    private function loadValidatorType(array &$property, Type $type, $arrayized = false)
+    private function loadValidatorType(array &$property, Type $type, bool $arrayized = false): array
     {
         $rules = [];
 
@@ -209,7 +209,7 @@ class YamlValidatorConverter extends YamlConverter
      *
      * @param bool $arrayize
      */
-    private function loadValidatorElement(array &$property, ElementItem $element)
+    private function loadValidatorElement(array &$property, ElementItem $element): void
     {
         /* @var $element Element */
         $type = $element->getType();
@@ -275,7 +275,7 @@ class YamlValidatorConverter extends YamlConverter
      * @param AttributeItem $element
      * @param bool $arrayize
      */
-    private function loadValidatorAttribute(array &$property, AttributeItem $attribute)
+    private function loadValidatorAttribute(array &$property, AttributeItem $attribute): void
     {
         /* @var $element Element */
         $type = $attribute->getType();
@@ -299,7 +299,7 @@ class YamlValidatorConverter extends YamlConverter
      * @param array $data
      * @param string $name
      */
-    protected function visitSimpleType(&$class, &$data, SimpleType $type, $name)
+    protected function visitSimpleType(&$class, &$data, SimpleType $type, $name): void
     {
         parent::visitSimpleType($class, $data, $type, $name);
 
@@ -322,7 +322,7 @@ class YamlValidatorConverter extends YamlConverter
      *
      * @return PHPProperty
      */
-    protected function &visitElement(&$class, Schema $schema, ElementItem $element, $arrayize = true)
+    protected function &visitElement(&$class, Schema $schema, ElementItem $element, bool $arrayize = true): array
     {
         $property = parent::visitElement($class, $schema, $element, $arrayize);
 
@@ -338,7 +338,7 @@ class YamlValidatorConverter extends YamlConverter
      *
      * @return array
      */
-    protected function &visitAttribute(&$class, Schema $schema, AttributeItem $attribute)
+    protected function &visitAttribute(&$class, Schema $schema, AttributeItem $attribute): array
     {
         $property = parent::visitAttribute($class, $schema, $attribute);
 
@@ -354,7 +354,7 @@ class YamlValidatorConverter extends YamlConverter
      * @param array $data
      * @param string $parentName
      */
-    protected function &handleClassExtension(&$class, &$data, Type $type, $parentName)
+    protected function &handleClassExtension(&$class, &$data, Type $type, $parentName): array
     {
         $property = parent::handleClassExtension($class, $data, $type, $parentName);
 

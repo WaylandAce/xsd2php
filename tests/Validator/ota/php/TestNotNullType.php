@@ -1,6 +1,6 @@
 <?php
 
-namespace ota;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Validator\ota\php;
 
 /**
  * Class representing TestNotNull.
@@ -9,30 +9,14 @@ namespace ota;
  */
 class TestNotNullType
 {
-    /**
-     * @property string
-     * $value
-     */
-    private $value = null;
+    private ?string $value = null;
 
-    /**
-     * Gets as value.
-     *
-     * @return string
-     */
-    public function getValue()
+    public function getValue(): ?string
     {
         return $this->value;
     }
 
-    /**
-     * Sets a new value.
-     *
-     * @param string $value
-     *
-     * @return self
-     */
-    public function setValue($value)
+    public function setValue(string $value): static
     {
         $this->value = $value;
 

@@ -17,34 +17,31 @@ abstract class AbstractConverter
 {
     use LoggerAwareTrait;
 
-    protected $baseSchemas = [
+    protected array $baseSchemas = [
         'http://www.w3.org/2001/XMLSchema',
         'http://www.w3.org/XML/1998/namespace',
     ];
 
-    protected $namespaces = [
+    protected array $namespaces = [
         'http://www.w3.org/2001/XMLSchema' => '',
         'http://www.w3.org/XML/1998/namespace' => '',
     ];
 
-    /**
-     * @var \GoetasWebservices\Xsd\XsdToPhp\Naming\NamingStrategy
-     */
-    private $namingStrategy;
+    private NamingStrategy $namingStrategy;
 
     abstract public function convert(array $schemas);
 
-    protected $typeAliases = [];
+    protected array $typeAliases = [];
 
-    protected $aliasCache = [];
+    protected array $aliasCache = [];
 
-    public function addAliasMap($ns, $name, callable $handler)
+    public function addAliasMap($ns, $name, callable $handler): void
     {
         $this->logger->info("Added map $ns $name");
         $this->typeAliases[$ns][$name] = $handler;
     }
 
-    public function addAliasMapType($ns, $name, $type)
+    public function addAliasMapType($ns, $name, $type): void
     {
         $this->addAliasMap($ns, $name, function () use ($type) {
             return $type;
@@ -186,15 +183,12 @@ abstract class AbstractConverter
         });
     }
 
-    /**
-     * @return \GoetasWebservices\Xsd\XsdToPhp\Naming\NamingStrategy
-     */
-    protected function getNamingStrategy()
+    protected function getNamingStrategy(): NamingStrategy
     {
         return $this->namingStrategy;
     }
 
-    public function addNamespace($ns, $phpNamespace)
+    public function addNamespace(string $ns, string $phpNamespace): static
     {
         $this->logger->info("Added ns mapping $ns, $phpNamespace");
         $this->namespaces[$ns] = $phpNamespace;
@@ -202,7 +196,7 @@ abstract class AbstractConverter
         return $this;
     }
 
-    protected function cleanName($name)
+    protected function cleanName(string $name): string
     {
         return preg_replace('/<.*>/', '', $name);
     }
@@ -210,7 +204,7 @@ abstract class AbstractConverter
     /**
      * @return \GoetasWebservices\XML\XSDReader\Schema\Type\Type|null
      */
-    protected function isArrayType(Type $type)
+    protected function isArrayType(Type $type): ?Type
     {
         if ($type instanceof SimpleType) {
             if ($type->getList()) {
@@ -224,34 +218,30 @@ abstract class AbstractConverter
             }
         }
 
-        return  null;
+        return null;
     }
 
-    /**
-     * @return \GoetasWebservices\XML\XSDReader\Schema\Element\ElementSingle|null
-     */
-    protected function isArrayNestedElement(Type $type)
+    protected function isArrayNestedElement(Type $type): ?ElementSingle
     {
         if ($type instanceof ComplexType && !$type->getParent() && !$type->getAttributes() && count($type->getElements()) === 1) {
             $elements = $type->getElements();
 
             return $this->isArrayElement(reset($elements));
         }
+
+        return null;
     }
 
-    /**
-     * @param mixed $element
-     *
-     * @return \GoetasWebservices\XML\XSDReader\Schema\Element\ElementSingle|null
-     */
-    protected function isArrayElement($element)
+    protected function isArrayElement($element): ?ElementSingle
     {
         if ($element instanceof ElementSingle && ($element->getMax() > 1 || $element->getMax() === -1)) {
             return $element;
         }
+
+        return null;
     }
 
-    public function getNamespaces()
+    public function getNamespaces(): array
     {
         return $this->namespaces;
     }

@@ -13,10 +13,8 @@ class VeryShortNamingStrategy extends ShortNamingStrategy
 {
     /**
      * Suffix with 'T' instead of 'Type'.
-     *
-     * @return string
      */
-    public function getTypeName(Type $type)
+    public function getTypeName(Type $type): string
     {
         $name = $this->classify($type->getName());
 
@@ -33,22 +31,13 @@ class VeryShortNamingStrategy extends ShortNamingStrategy
 
     /**
      * Suffix with 'A' instead of 'AType'.
-     *
-     * @param string $parentName
-     *
-     * @return string
      */
-    public function getAnonymousTypeName(Type $type, $parentName)
+    public function getAnonymousTypeName(Type $type, string $parentName): string
     {
         return $this->classify($parentName) . 'A';
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    protected function classify($name)
+    protected function classify(string $name): string
     {
         $inflector = InflectorFactory::create()->build();
 

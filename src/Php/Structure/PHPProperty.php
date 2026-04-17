@@ -4,25 +4,14 @@ namespace GoetasWebservices\Xsd\XsdToPhp\Php\Structure;
 
 class PHPProperty extends PHPArg
 {
-    /**
-     * @var string
-     */
-    protected $visibility = 'protected';
+    protected string $visibility = 'protected';
 
-    /**
-     * @return string
-     */
-    public function getVisibility()
+    public function getVisibility(): string
     {
         return $this->visibility;
     }
 
-    /**
-     * @param string $visibility
-     *
-     * @return $this
-     */
-    public function setVisibility($visibility)
+    public function setVisibility(string $visibility): static
     {
         $this->visibility = $visibility;
 

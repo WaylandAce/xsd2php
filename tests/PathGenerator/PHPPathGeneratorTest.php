@@ -1,6 +1,6 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Php\PathGenerator;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PathGenerator;
 
 use GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator\Psr4PathGenerator;
 use Laminas\Code\Generator\ClassGenerator;
@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class PHPPathGeneratorTest extends TestCase
 {
-    protected $tmpdir;
+    protected string $tmpdir;
 
     public function setUp(): void
     {

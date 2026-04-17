@@ -1,13 +1,13 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Php\PathGenerator;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PathGenerator;
 
 use GoetasWebservices\Xsd\XsdToPhp\Jms\PathGenerator\Psr4PathGenerator;
 use PHPUnit\Framework\TestCase;
 
 class JMSPathGeneratorTest extends TestCase
 {
-    protected $tmpdir;
+    protected string $tmpdir;
 
     public function setUp(): void
     {

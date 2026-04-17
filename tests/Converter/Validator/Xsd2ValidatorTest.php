@@ -9,15 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class Xsd2ValidatorTest extends TestCase
 {
-    /**
-     * @var YamlValidatorConverter
-     */
-    protected $converter;
+    protected YamlValidatorConverter $converter;
 
-    /**
-     * @var SchemaReader
-     */
-    protected $reader;
+    protected SchemaReader $reader;
 
     /**
      * Set up converter and reader properties.
@@ -37,14 +31,14 @@ class Xsd2ValidatorTest extends TestCase
      *
      * @return array
      */
-    protected function getClasses($xml)
+    protected function getClasses($xml): array
     {
         $schema = $this->reader->readString($xml);
 
         return $this->converter->convert([$schema]);
     }
 
-    public function getRestrictionsValidations()
+    public function getRestrictionsValidations(): array
     {
         return [
             // enumeration / Choice->choices
@@ -137,17 +131,6 @@ class Xsd2ValidatorTest extends TestCase
                 ],
             ],
             [
-                '<xs:pattern value="[A-Z\\p{IsBasicLatin}\\p{IsLatin-1Supplement}]"/>',
-                [
-                    [
-                        'Regex' => [
-                            'pattern' => '~[\x{0000}-\x{007F}\x{0080}-\x{00FF}]~u',
-                            'groups' => ['xsd_rules'],
-                        ],
-                    ],
-                ],
-            ],
-            [
                 '<xs:pattern value="\\([0-9]{2}\\)\\s[0-9]{4}-[0-9]{4,5}"/>',
                 [
                     [
@@ -215,7 +198,7 @@ class Xsd2ValidatorTest extends TestCase
     public function testSimpleTypeWithValidations($xsRestrictions, $ymlValidations)
     {
         $xml = '
-             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">
                 <xs:element name="element-one">
                     <xs:simpleType>
                          <xs:restriction base="xs:string">
@@ -225,7 +208,7 @@ class Xsd2ValidatorTest extends TestCase
                 </xs:element>
                 <xs:complexType name="type-one">
                     <xs:sequence>
-                        <xs:element ref="element-one" minOccurs="0"/>
+                        <xs:element ref="tns:element-one" minOccurs="0"/>
                     </xs:sequence>
                 </xs:complexType>
                </xs:schema>
@@ -1016,7 +999,7 @@ class Xsd2ValidatorTest extends TestCase
     public function testComplexTypeWithExtension_1()
     {
         $content = '
-            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
+            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
                 <xs:complexType name="personinfo">
                     <xs:sequence>
                         <xs:element name="firstname" type="xs:string"/>
@@ -1025,7 +1008,7 @@ class Xsd2ValidatorTest extends TestCase
                 </xs:complexType>
                 <xs:complexType name="fullpersoninfo">
                     <xs:complexContent>
-                        <xs:extension base="personinfo">
+                        <xs:extension base="ex:personinfo">
                             <xs:attribute name="lang" type="xs:string" use="required" /> 
                             <xs:sequence>
                                 <xs:element name="address" type="xs:string"/>

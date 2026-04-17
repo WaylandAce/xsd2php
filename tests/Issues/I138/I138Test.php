@@ -1,5 +1,5 @@
 <?php
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I63;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I138;
 
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;

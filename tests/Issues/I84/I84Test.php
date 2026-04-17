@@ -1,6 +1,6 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I63;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I84;
 
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;

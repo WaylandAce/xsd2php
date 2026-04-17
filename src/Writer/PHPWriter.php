@@ -13,8 +13,8 @@ class PHPWriter extends Writer implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    protected $classWriter;
-    private $generator;
+    protected PHPClassWriter $classWriter;
+    private ClassGenerator $generator;
 
     public function __construct(PHPClassWriter $classWriter, ClassGenerator $generator, ?LoggerInterface $logger = null)
     {
@@ -26,7 +26,7 @@ class PHPWriter extends Writer implements LoggerAwareInterface
     /**
      * @param PHPClass[] $items
      */
-    public function write(array $items)
+    public function write(array $items): void
     {
         while ($item = array_pop($items)) {
             if ($generator = $this->generator->generate($item)) {

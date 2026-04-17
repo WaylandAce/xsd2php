@@ -9,6 +9,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class Xsd2PhpExtension extends Extension
 {
+    /**
+     * @throws \Exception
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $xml = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));

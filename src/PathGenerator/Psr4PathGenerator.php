@@ -11,11 +11,11 @@ abstract class Psr4PathGenerator
         $this->setTargets($targets);
     }
 
-    public function setTargets($namespaces): void
+    public function setTargets(array $namespaces): void
     {
         $this->namespaces = $namespaces;
 
-        foreach ($this->namespaces as $namespace => $dir) {
+        foreach ($this->namespaces as $dir) {
             if (!is_dir($dir)) {
                 mkdir($dir, 0777, true);
             }

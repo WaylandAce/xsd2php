@@ -8,10 +8,13 @@ use Laminas\Code\Generator\ClassGenerator;
 
 class Psr4PathGenerator extends Psr4PathGeneratorBase implements PathGenerator
 {
+    /**
+     * @throws PathGeneratorException
+     */
     public function getPath(ClassGenerator $php): string
     {
         foreach ($this->namespaces as $namespace => $dir) {
-            if (strpos(trim($php->getNamespaceName()) . '\\', $namespace) === 0) {
+            if (str_starts_with(trim($php->getNamespaceName()) . '\\', $namespace)) {
                 $d = strtr(substr($php->getNamespaceName(), strlen($namespace)), '\\', '/');
                 $dir = rtrim($dir, '/') . '/' . $d;
                 if (!is_dir($dir) && !@mkdir($dir, 0777, true)) {

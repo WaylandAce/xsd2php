@@ -7,12 +7,12 @@ use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 
 interface NamingStrategy
 {
-    public function getTypeName(Type $type);
+    public function getTypeName(Type $type): string;
 
-    public function getAnonymousTypeName(Type $type, $parentName);
+    public function getAnonymousTypeName(Type $type, string $parentName): string;
 
-    public function getItemName(Item $item);
+    public function getItemName(Item $item): string;
 
     //@todo introduce common type for attributes and elements
-    public function getPropertyName($item);
+    public function getPropertyName($item): string;
 }

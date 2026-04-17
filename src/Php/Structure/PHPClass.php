@@ -4,21 +4,38 @@ namespace GoetasWebservices\Xsd\XsdToPhp\Php\Structure;
 
 class PHPClass
 {
-    protected $name;
+    protected ?string $name;
 
-    protected $namespace;
+    protected ?string $namespace;
 
-    protected $doc;
+    protected ?string $doc = null;
 
-    protected $implements = [];
+    protected bool $abstract;
 
-    public static function createFromFQCN($className)
+    protected ?PHPClass $extends = null;
+
+    protected array $implements = [];
+
+
+    protected array $checks = [];
+
+    /**
+     * @var PHPConstant[]
+     */
+    protected array $constants = [];
+
+    /**
+     * @var PHPProperty[]
+     */
+    protected array $properties = [];
+
+    public static function createFromFQCN(string $className): PHPClass
     {
         if (($pos = strrpos($className, '\\')) !== false) {
             return new self(substr($className, $pos + 1), substr($className, 0, $pos));
-        } else {
-            return new self($className);
         }
+
+        return new self($className);
     }
 
     /**
@@ -29,12 +46,7 @@ class PHPClass
         return $this->implements;
     }
 
-    /**
-     * @param bool $onlyParent
-     *
-     * @return PHPProperty
-     */
-    public function isSimpleType($onlyParent = false)
+    public function isSimpleType(bool $onlyParent = false): ?PHPProperty
     {
         if ($onlyParent) {
             $e = $this->getExtends();
@@ -43,19 +55,19 @@ class PHPClass
                     return $e->getProperty('__value');
                 }
             }
-        } else {
-            if ($this->hasPropertyInHierarchy('__value') && count($this->getPropertiesInHierarchy()) === 1) {
-                return $this->getPropertyInHierarchy('__value');
-            }
+        } elseif ($this->hasPropertyInHierarchy('__value') && count($this->getPropertiesInHierarchy()) === 1) {
+            return $this->getPropertyInHierarchy('__value');
         }
+
+        return null;
     }
 
-    public function setImplements(array $fqcn)
+    public function setImplements(array $fqcn): void
     {
         $this->implements = $fqcn;
     }
 
-    public function getPhpType()
+    public function getPhpType(): string
     {
         if (!$this->getNamespace()) {
             if ($this->isNativeType()) {
@@ -68,7 +80,7 @@ class PHPClass
         return '\\' . $this->getFullName();
     }
 
-    public function isNativeType()
+    public function isNativeType(): bool
     {
         return !$this->getNamespace() && in_array($this->getName(), [
             'string',
@@ -82,92 +94,64 @@ class PHPClass
         ]);
     }
 
-    public function __construct($name = null, $namespace = null)
+    public function __construct(?string $name = null, ?string $namespace = null)
     {
         $this->name = $name;
         $this->namespace = $namespace;
     }
 
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName($name)
+    public function setName(string $name): static
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getNamespace()
+    public function getNamespace(): ?string
     {
         return $this->namespace;
     }
 
-    public function setNamespace($namespace)
+    public function setNamespace(string $namespace): static
     {
         $this->namespace = $namespace;
 
         return $this;
     }
 
-    public function getDoc()
+    public function getDoc(): ?string
     {
         return $this->doc;
     }
 
-    public function setDoc($doc)
+    public function setDoc(?string $doc): static
     {
         $this->doc = $doc;
 
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getFullName();
     }
 
-    public function getFullName()
+    public function getFullName(): string
     {
         return "{$this->namespace}\\{$this->name}";
     }
 
-    protected $checks = [];
-
-    /**
-     * @var PHPConstant[]
-     */
-    protected $constants = [];
-
-    /**
-     * @var PHPProperty[]
-     */
-    protected $properties = [];
-
-    /**
-     * @param
-     *            $property
-     *
-     * @return array
-     */
-    public function getChecks($property)
+    public function getChecks(string $property): array
     {
-        return isset($this->checks[$property]) ? $this->checks[$property] : [];
+        return $this->checks[$property] ?? [];
     }
 
-    /**
-     * @param
-     *            $property
-     * @param
-     *            $check
-     * @param
-     *            $value
-     *
-     * @return $this
-     */
-    public function addCheck($property, $check, $value)
+    public function addCheck(string $property, $check, $value): static
     {
         $this->checks[$property][$check][] = $value;
 
@@ -177,27 +161,17 @@ class PHPClass
     /**
      * @return PHPProperty[]
      */
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasProperty($name)
+    public function hasProperty(string $name): bool
     {
         return isset($this->properties[$name]);
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasPropertyInHierarchy($name)
+    public function hasPropertyInHierarchy(string $name): bool
     {
         if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && !$this->hasProperty($name))) {
             return false;
@@ -212,12 +186,7 @@ class PHPClass
         return false;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PHPProperty
-     */
-    public function getPropertyInHierarchy($name)
+    public function getPropertyInHierarchy(string $name): ?PHPProperty
     {
         if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && !$this->hasProperty($name))) {
             return null;
@@ -233,12 +202,7 @@ class PHPClass
         return null;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PHPProperty
-     */
-    public function getPropertiesInHierarchy()
+    public function getPropertiesInHierarchy(): array
     {
         $ps = $this->getProperties();
 
@@ -249,62 +213,38 @@ class PHPClass
         return $ps;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return PHPProperty
-     */
-    public function getProperty($name)
+    public function getProperty(string $name): PHPProperty
     {
         return $this->properties[$name];
     }
 
-    /**
-     * @return $this
-     */
-    public function addProperty(PHPProperty $property)
+    public function addProperty(PHPProperty $property): static
     {
         $this->properties[$property->getName()] = $property;
 
         return $this;
     }
 
-    /**
-     * @var bool
-     */
-    protected $abstract;
-
-    /**
-     * @var PHPClass
-     */
-    protected $extends;
-
-    /**
-     * @return PHPClass
-     */
-    public function getExtends()
+    public function getExtends(): ?PHPClass
     {
         return $this->extends;
     }
 
-    /**
-     * @return PHPClass
-     */
-    public function setExtends(PHPClass $extends)
+    public function setExtends(PHPClass $extends): static
     {
         $this->extends = $extends;
 
         return $this;
     }
 
-    public function getAbstract()
+    public function getAbstract(): bool
     {
         return $this->abstract;
     }
 
-    public function setAbstract($abstract)
+    public function setAbstract(bool $abstract): static
     {
-        $this->abstract = (bool) $abstract;
+        $this->abstract = $abstract;
 
         return $this;
     }

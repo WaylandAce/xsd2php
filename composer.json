@@ -23,9 +23,9 @@
     "symfony/dependency-injection": "^7.0",
     "symfony/yaml": "^7.0",
     "symfony/config": "^7.0",
-    "goetas-webservices/xsd-reader": "^0.4.7",
+    "goetas-webservices/xsd-reader": "^0.4.11",
     "doctrine/inflector": "^2.0",
-    "laminas/laminas-code": "^3.3.2|^4.0",
+    "laminas/laminas-code": "^4.0",
     "psr/log": "^3.0"
   },
   "require-dev": {
@@ -33,7 +33,8 @@
     "jms/serializer": "^3.0",
     "goetas-webservices/xsd2php-runtime": "^0.2.13@dev",
     "symfony/validator": "^7.0",
-    "dms/phpunit-arraysubset-asserts": "^0.3.1"
+    "dms/phpunit-arraysubset-asserts": "^0.3.1",
+    "symplify/easy-coding-standard": "^13.0"
   },
   "autoload": {
     "psr-4": {

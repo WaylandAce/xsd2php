@@ -1,6 +1,6 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\JmsSerializer\OTA;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PHP;
 
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
@@ -15,7 +15,7 @@ class PHPConversionTest extends TestCase
      *
      * @return \Laminas\Code\Generator\ClassGenerator[]
      */
-    protected function getClasses($xml)
+    protected function getClasses($xml): array
     {
         $phpcreator = new PhpConverter(new ShortNamingStrategy());
         $phpcreator->addNamespace('http://www.example.com', 'Example');
@@ -119,14 +119,13 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('setId'));
     }
 
-    public function testMulteplicity()
+    public function testMulteplicity(): void
     {
         $xml = '
-            <xs:schema targetNamespace="http://www.example.com"
-            xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">
                 <xs:complexType name="single">
                     <xs:all>
-                        <xs:element name="id" type="ary" minOccurs="0"/>
+                        <xs:element name="id" type="tns:ary" minOccurs="0"/>
                     </xs:all>
                 </xs:complexType>
                 <xs:complexType name="ary">
@@ -147,22 +146,25 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('getId'));
         $this->assertTrue($codegen->hasMethod('setId'));
 
-        $this->assertNull($codegen->getMethod('issetId')->getParameters()['index']->getType());
-        $this->assertNull($codegen->getMethod('issetId')->getParameters()['index']->getType());
+        $this->assertEquals('int|string', $codegen->getMethod('issetId')->getParameters()['index']->getType());
+        $this->assertEquals('int|string', $codegen->getMethod('unsetId')->getParameters()['index']->getType());
     }
 
     public function testNestedMulteplicity()
     {
         $xml = '
-            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:schema 
+                targetNamespace="http://www.example.com" 
+                xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+                xmlns:tns="http://www.example.com">
                 <xs:complexType name="single">
                     <xs:all>
-                        <xs:element name="id" type="ary" minOccurs="0"/>
+                        <xs:element name="id" type="tns:ary" minOccurs="0"/>
                     </xs:all>
                 </xs:complexType>
                 <xs:complexType name="ary">
                     <xs:all>
-                        <xs:element name="idA" type="ary2" maxOccurs="2"/>
+                        <xs:element name="idA" type="tns:ary2" maxOccurs="2"/>
                     </xs:all>
                 </xs:complexType>
                 <xs:complexType name="ary2">
@@ -198,7 +200,8 @@ class PHPConversionTest extends TestCase
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"
-            xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://www.example.com">
 
                 <xs:complexType name="ArrayOfStrings">
                     <xs:all>
@@ -208,8 +211,8 @@ class PHPConversionTest extends TestCase
 
                 <xs:complexType name="Single">
                     <xs:all>
-                        <xs:element name="a" type="ArrayOfStrings"/>
-                        <xs:element name="b" type="ArrayOfStrings"/>
+                        <xs:element name="a" type="tns:ArrayOfStrings"/>
+                        <xs:element name="b" type="tns:ArrayOfStrings"/>
                     </xs:all>
                 </xs:complexType>
 
@@ -231,11 +234,10 @@ class PHPConversionTest extends TestCase
     public function testSimpleMulteplicity()
     {
         $xml = '
-            <xs:schema targetNamespace="http://www.example.com"
-            xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">
                 <xs:complexType name="single">
                     <xs:all>
-                        <xs:element name="id" type="ary" minOccurs="0"/>
+                        <xs:element name="id" type="tns:ary" minOccurs="0"/>
                     </xs:all>
                 </xs:complexType>
                 <xs:simpleType name="ary">
@@ -278,7 +280,7 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('setDate2'));
         $this->assertNull($codegen->getMethod('setDate2')->getParameters()['date2']->getDefaultValue());
         $this->assertTrue($codegen->hasMethod('setStr1'));
-        $this->assertNull($codegen->getMethod('setStr1')->getParameters()['str1']->getDefaultValue());
+        $this->assertNull($codegen->getMethod('setStr1')->getParameters()['str1']->getDefaultValue()->getValue());
         $this->assertTrue($codegen->hasMethod('setStr2'));
         $this->assertNull($codegen->getMethod('setStr2')->getParameters()['str2']->getDefaultValue());
     }

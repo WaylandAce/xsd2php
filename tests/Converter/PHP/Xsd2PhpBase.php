@@ -9,15 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Xsd2PhpBase extends TestCase
 {
-    /**
-     * @var PhpConverter
-     */
-    protected $converter;
+    protected PhpConverter $converter;
 
-    /**
-     * @var SchemaReader
-     */
-    protected $reader;
+    protected SchemaReader $reader;
 
     public function setUp(): void
     {
@@ -27,21 +21,21 @@ abstract class Xsd2PhpBase extends TestCase
         $this->reader = new SchemaReader();
     }
 
-    protected function getClasses($xml)
+    protected function getClasses($xml): array
     {
         $schema = $this->reader->readString($xml);
 
         return $this->converter->convert([$schema]);
     }
 
-    public function getBaseTypeConversions()
+    public function getBaseTypeConversions(): array
     {
         return [
             ['xs:dateTime', 'DateTime'],
         ];
     }
 
-    public function getPrimitiveTypeConversions()
+    public function getPrimitiveTypeConversions(): array
     {
         return [
             ['xs:string', 'string'],

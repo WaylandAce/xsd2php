@@ -12,7 +12,7 @@ class NoConflictLongNamingStrategy extends AbstractNamingStrategy
         return $this->classify($type->getName()) . 'PHPType';
     }
 
-    public function getAnonymousTypeName(Type $type, $parentName): string
+    public function getAnonymousTypeName(Type $type, string $parentName): string
     {
         return $this->classify($parentName) . 'AnonymousPHPType';
     }

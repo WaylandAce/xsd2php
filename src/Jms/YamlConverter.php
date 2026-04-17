@@ -28,6 +28,8 @@ use GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClass;
 class YamlConverter extends AbstractConverter
 {
     protected bool $useCdata = true;
+    private array $classes = [];
+
 
     public function __construct(NamingStrategy $namingStrategy)
     {
@@ -48,15 +50,13 @@ class YamlConverter extends AbstractConverter
         });
     }
 
-    public function setUseCdata($value)
+    public function setUseCdata($value): static
     {
         $this->logger->info("Set useCdata $value");
         $this->useCdata = $value;
 
         return $this;
     }
-
-    private array $classes = [];
 
     public function convert(array $schemas): array
     {
@@ -153,6 +153,9 @@ class YamlConverter extends AbstractConverter
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function &visitElementDef(Schema $schema, ElementDef $element)
     {
         if (!isset($this->classes[spl_object_hash($element)])) {
@@ -179,7 +182,6 @@ class YamlConverter extends AbstractConverter
                 $visitedTypeClass = $this->visitType($type);
             }
 
-
             $data['extends'] = $visitedTypeClass;
             $this->classes[spl_object_hash($element)]['skip'] = in_array($element->getSchema()->getTargetNamespace(), $this->baseSchemas, true)
                 || $this->getTypeAlias($type, $type->getSchema())
@@ -193,7 +195,10 @@ class YamlConverter extends AbstractConverter
         return $this->classes[spl_object_hash($element)]['class'];
     }
 
-    private function findPHPNamespace(SchemaItem $item)
+    /**
+     * @throws Exception
+     */
+    private function findPHPNamespace(SchemaItem $item): string
     {
         $schema = $item->getSchema();
 
@@ -204,7 +209,10 @@ class YamlConverter extends AbstractConverter
         return $this->namespaces[$schema->getTargetNamespace()];
     }
 
-    private function findPHPName(Type $type)
+    /**
+     * @throws Exception
+     */
+    private function findPHPName(Type $type): string
     {
         $schema = $type->getSchema();
 
@@ -218,7 +226,10 @@ class YamlConverter extends AbstractConverter
         return $ns . '\\' . $name;
     }
 
-    public function &visitType(Type $type, $force = false)
+    /**
+     * @throws Exception
+     */
+    public function &visitType(Type $type, bool $force = false)
     {
         $skip = in_array($type->getSchema()->getTargetNamespace(), $this->baseSchemas, true);
 
@@ -265,13 +276,7 @@ class YamlConverter extends AbstractConverter
         return $this->classes[spl_object_hash($type)]['class'];
     }
 
-    /**
-     * @param string $parentName
-     * @param string $parentClass
-     *
-     * @return array
-     */
-    private function &visitTypeAnonymous(Type $type, $parentName, $parentClass)
+    private function &visitTypeAnonymous(Type $type, $parentName, string $parentClass): array
     {
         if (!isset($this->classes[spl_object_hash($type)])) {
             $class = [];
@@ -291,7 +296,7 @@ class YamlConverter extends AbstractConverter
         return $this->classes[spl_object_hash($type)]['class'];
     }
 
-    private function visitComplexType(&$class, &$data, ComplexType $type)
+    private function visitComplexType(&$class, &$data, ComplexType $type): void
     {
         $schema = $type->getSchema();
         if (!isset($data['properties'])) {
@@ -305,7 +310,7 @@ class YamlConverter extends AbstractConverter
         }
     }
 
-    protected function visitSimpleType(&$class, &$data, SimpleType $type, $name)
+    protected function visitSimpleType(&$class, &$data, SimpleType $type, $name): void
     {
         if ($restriction = $type->getRestriction()) {
             $parent = $restriction->getBase();
@@ -320,7 +325,7 @@ class YamlConverter extends AbstractConverter
         }
     }
 
-    private function visitBaseComplexType(&$class, &$data, BaseComplexType $type, $name)
+    private function visitBaseComplexType(&$class, &$data, BaseComplexType $type, string $name): void
     {
         $parent = $type->getParent();
         if ($parent) {
@@ -339,7 +344,7 @@ class YamlConverter extends AbstractConverter
         }
     }
 
-    protected function &handleClassExtension(&$class, &$data, Type $type, $parentName)
+    protected function &handleClassExtension(&$class, &$data, Type $type, string $parentName): array
     {
         $property = [];
         if ($alias = $this->getTypeAlias($type)) {
@@ -376,7 +381,10 @@ class YamlConverter extends AbstractConverter
         return $property;
     }
 
-    protected function &visitAttribute(&$class, Schema $schema, AttributeItem $attribute)
+    /**
+     * @throws Exception
+     */
+    protected function &visitAttribute(&$class, Schema $schema, AttributeItem $attribute): array
     {
         $property = [];
         $property['expose'] = true;
@@ -468,7 +476,7 @@ class YamlConverter extends AbstractConverter
      *
      * @return string|null
      */
-    protected function getElementNamespace(Schema $schema, ElementItem $element)
+    protected function getElementNamespace(Schema $schema, ElementItem $element): ?string
     {
         if ($element->getSchema()->getTargetNamespace() &&
             ($schema->getElementsQualification() || ($element instanceof Element && $element->isQualified()) || !$element->isLocal())
@@ -482,11 +490,11 @@ class YamlConverter extends AbstractConverter
     /**
      * @param PHPClass $class
      * @param Element  $element
-     * @param bool     $arrayize
+     * @param bool $arrayize
      *
      * @return array
      */
-    protected function &visitElement(&$class, Schema $schema, ElementItem $element, $arrayize = true)
+    protected function &visitElement(&$class, Schema $schema, ElementItem $element, bool $arrayize = true): array
     {
         $property = [];
         $property['expose'] = true;
@@ -580,6 +588,9 @@ class YamlConverter extends AbstractConverter
         return $property;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function findPHPClass(&$class, Item $node)
     {
         $type = $node->getType();
@@ -606,6 +617,9 @@ class YamlConverter extends AbstractConverter
         return key($visited);
     }
 
+    /**
+     * @throws Exception
+     */
     private function findPHPElementClassName(&$class, ElementItem $element): string
     {
         if ($element instanceof ElementRef) {

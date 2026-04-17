@@ -1,6 +1,6 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I11;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I111;
 
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;

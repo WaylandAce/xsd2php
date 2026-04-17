@@ -9,15 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Xsd2JmsBase extends TestCase
 {
-    /**
-     * @var YamlConverter
-     */
-    protected $converter;
+    protected YamlConverter $converter;
 
-    /**
-     * @var SchemaReader
-     */
-    protected $reader;
+    protected SchemaReader $reader;
 
     public function setUp(): void
     {
@@ -27,14 +21,14 @@ abstract class Xsd2JmsBase extends TestCase
         $this->reader = new SchemaReader();
     }
 
-    protected function getClasses($xml)
+    protected function getClasses(string $xml): array
     {
         $schema = $this->reader->readString($xml);
 
         return $this->converter->convert([$schema]);
     }
 
-    public function getBaseTypeConversions()
+    public function getBaseTypeConversions(): array
     {
         return [
             ['xs:dateTime', 'DateTime', 'GoetasWebservices\\Xsd\\XsdToPhp\\XMLSchema\\DateTime'],
@@ -42,7 +36,7 @@ abstract class Xsd2JmsBase extends TestCase
         ];
     }
 
-    public function getPrimitiveTypeConversions()
+    public function getPrimitiveTypeConversions(): array
     {
         return [
             ['xs:string', 'string'],

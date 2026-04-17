@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Validation;
 
 class Generator extends AbstractGenerator
 {
-    public function generate(array $schemas)
+    public function generate(array $schemas): void
     {
         $this->cleanDirectories();
 

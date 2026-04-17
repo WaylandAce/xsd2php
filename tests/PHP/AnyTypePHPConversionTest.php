@@ -1,22 +1,22 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\JmsSerializer\OTA;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PHP;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\ClassGenerator;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;
+use Laminas\Code\Generator\MethodGenerator;
 use PHPUnit\Framework\TestCase;
 
 class AnyTypePHPConversionTest extends TestCase
 {
     /**
-     * @param mixed $xml
-     *
-     * @return array[]
+     * @throws IOException
      */
-    protected function getYamlFiles($xml, array $types = [])
+    protected function getYamlFiles($xml, array $types = []): array
     {
         $creator = new YamlConverter(new ShortNamingStrategy());
         $creator->addNamespace('', 'Example');
@@ -37,17 +37,11 @@ class AnyTypePHPConversionTest extends TestCase
         foreach ($xml as $name => $str) {
             $schemas[] = $reader->readString($str, $name);
         }
-        $items = $creator->convert($schemas);
 
-        return $items;
+        return $creator->convert($schemas);
     }
 
-    /**
-     * @param mixed $xml
-     *
-     * @return \Laminas\Code\Generator\ClassGenerator[]
-     */
-    protected function getPhpClasses($xml, array $types = [])
+    protected function getPhpClasses($xml, array $types = []): array
     {
         $creator = new PhpConverter(new ShortNamingStrategy());
         $creator->addNamespace('', 'Example');
@@ -81,7 +75,7 @@ class AnyTypePHPConversionTest extends TestCase
         return $classes;
     }
 
-    public function testSimpleAnyTypePHP()
+    public function testSimpleAnyTypePHP(): void
     {
         $xml = '
             <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -103,13 +97,17 @@ class AnyTypePHPConversionTest extends TestCase
         $this->assertTrue($single->hasMethod('getId'));
         $this->assertTrue($single->hasMethod('setId'));
 
-        $returnTags = $single->getMethod('getId')->getDocBlock()->getTags();
+        /** @var \Laminas\Code\Generator\TypeGenerator $returnType */
+        $returnType = $single->getMethod('getId')->getReturnType();
 
-        $this->assertCount(1, $returnTags);
-        $this->assertEquals(['mixed'], $returnTags[0]->getTypes());
+        $this->assertNotNull($returnType);
+        $this->assertEquals('mixed', $returnType->generate());
     }
 
-    public function testSimpleAnyTypeYaml()
+    /**
+     * @throws IOException
+     */
+    public function testSimpleAnyTypeYaml(): void
     {
         $xml = '
             <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">

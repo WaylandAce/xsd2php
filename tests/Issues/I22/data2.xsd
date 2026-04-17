@@ -1,7 +1,12 @@
-<xs:schema elementFormDefault="qualified" targetNamespace="http://www.example2.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema
+        elementFormDefault="qualified"
+        targetNamespace="http://www.example2.com"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="http://www.example2.com"
+>
     <xs:complexType name="ElementList">
         <xs:sequence>
-            <xs:element maxOccurs="5" name="Element" type="Element"/>
+            <xs:element maxOccurs="5" name="Element" type="tns:Element"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="Element">

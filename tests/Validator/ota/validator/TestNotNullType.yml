@@ -1,4 +1,4 @@
-ota\TestNotNullType:
+GoetasWebservices\Xsd\XsdToPhp\Tests\Validator\ota\php\TestNotNullType:
     properties:
         value:
             -

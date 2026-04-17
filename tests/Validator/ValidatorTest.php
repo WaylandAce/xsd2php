@@ -1,24 +1,21 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Php\PathGenerator;
+namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Validator;
 
 use Composer\Autoload\ClassLoader;
-use ota\TestNotNullType;
+use GoetasWebservices\Xsd\XsdToPhp\Tests\Validator\ota\php\TestNotNullType;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ValidatorTest extends TestCase
 {
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
+    protected ValidatorInterface $validator;
 
     public function setUp(): void
     {
         $loader = new ClassLoader();
-        $loader->addPsr4('ota\\', __DIR__ . '/ota/php');
+        $loader->addPsr4('GoetasWebservices\\Xsd\\XsdToPhp\\Tests\\Validator\\ota\\php\\', __DIR__ . '/ota/php');
         $loader->register();
 
         $builder = Validation::createValidatorBuilder();
