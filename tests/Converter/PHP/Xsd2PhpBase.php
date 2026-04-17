@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\PHP;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;
@@ -21,21 +24,24 @@ abstract class Xsd2PhpBase extends TestCase
         $this->reader = new SchemaReader();
     }
 
-    protected function getClasses($xml): array
+    /**
+     * @throws IOException
+     */
+    protected function getClasses(string $xml): array
     {
         $schema = $this->reader->readString($xml);
 
         return $this->converter->convert([$schema]);
     }
 
-    public function getBaseTypeConversions(): array
+    public static function getBaseTypeConversions(): array
     {
         return [
             ['xs:dateTime', 'DateTime'],
         ];
     }
 
-    public function getPrimitiveTypeConversions(): array
+    public static function getPrimitiveTypeConversions(): array
     {
         return [
             ['xs:string', 'string'],

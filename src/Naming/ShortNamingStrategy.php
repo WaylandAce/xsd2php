@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Naming;
 
-use GoetasWebservices\XML\XSDReader\Schema\Item;
 use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 
 class ShortNamingStrategy extends AbstractNamingStrategy
@@ -10,7 +11,7 @@ class ShortNamingStrategy extends AbstractNamingStrategy
     public function getTypeName(Type $type): string
     {
         $name = $this->classify($type->getName());
-        if ($name && !str_ends_with($name, 'Type')) {
+        if ($name && ! str_ends_with($name, 'Type')) {
             $name .= 'Type';
         }
 

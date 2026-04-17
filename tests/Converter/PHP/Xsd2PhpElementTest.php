@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\PHP;
+
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class Xsd2PhpElementTest extends Xsd2PhpBase
 {
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveType($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveType(string $xsType, string $phpName): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -23,9 +29,10 @@ class Xsd2PhpElementTest extends Xsd2PhpBase
     }
 
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveTypeAnon($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveTypeAnon(string $xsType, string $phpName): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -43,9 +50,10 @@ class Xsd2PhpElementTest extends Xsd2PhpBase
     }
 
     /**
-     * @dataProvider getBaseTypeConversions
+     * @throws IOException
      */
-    public function testElementOfBaseType($xsType, $phpName)
+    #[DataProvider('getBaseTypeConversions')]
+    public function testElementOfBaseType(string $xsType, string $phpName): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -59,9 +67,10 @@ class Xsd2PhpElementTest extends Xsd2PhpBase
     }
 
     /**
-     * @dataProvider getBaseTypeConversions
+     * @throws IOException
      */
-    public function testElementOfBaseTypeAnon($xsType, $phpName)
+    #[DataProvider('getBaseTypeConversions')]
+    public function testElementOfBaseTypeAnon(string $xsType, string $phpName): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">

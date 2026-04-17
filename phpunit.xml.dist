@@ -2,25 +2,14 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          backupGlobals="true"
-         backupStaticAttributes="false"
          bootstrap="./tests/bootstrap.php"
-         colors="false"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="false"
-         convertWarningsToExceptions="true"
-         forceCoversAnnotation="false"
-         processIsolation="false"
-         stopOnError="false"
-         stopOnFailure="false"
-         stopOnIncomplete="false"
-         stopOnSkipped="false"
-         verbose="false"
+         displayDetailsOnPhpunitDeprecations="true"
 >
-  <coverage>
+  <source>
     <include>
       <directory>src</directory>
     </include>
-  </coverage>
+  </source>
   <testsuites>
     <testsuite name="Goetas XSD to PHP Test Suite">
       <directory>./tests</directory>

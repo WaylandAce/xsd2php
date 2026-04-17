@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I26;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
@@ -9,7 +12,10 @@ use PHPUnit\Framework\TestCase;
 
 class I26Test extends TestCase
 {
-    public function testSkipWhenEmptyOnOptionalAndRequiredLists()
+    /**
+     * @throws IOException
+     */
+    public function testSkipWhenEmptyOnOptionalAndRequiredLists(): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile(__DIR__ . '/data.xsd');

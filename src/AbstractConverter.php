@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp;
 
 use GoetasWebservices\XML\XSDReader\Schema\Element\ElementSingle;
@@ -53,16 +55,19 @@ abstract class AbstractConverter
         return $this->typeAliases;
     }
 
-    public function getTypeAlias($type, ?Schema $schemapos = null)
+    public function getTypeAlias($type, ?Schema $schemaPos = null)
     {
-        $schema = $schemapos ?: $type->getSchema();
+        $schema = $schemaPos ?: $type->getSchema();
 
         $cid = $schema->getTargetNamespace() . '|' . $type->getName();
         if (isset($this->aliasCache[$cid])) {
             return $this->aliasCache[$cid];
         }
         if (isset($this->typeAliases[$schema->getTargetNamespace()][$type->getName()])) {
-            return $this->aliasCache[$cid] = call_user_func($this->typeAliases[$schema->getTargetNamespace()][$type->getName()], $type);
+            return $this->aliasCache[$cid] = call_user_func(
+                $this->typeAliases[$schema->getTargetNamespace()][$type->getName()],
+                $type
+            );
         }
     }
 
@@ -223,7 +228,7 @@ abstract class AbstractConverter
 
     protected function isArrayNestedElement(Type $type): ?ElementSingle
     {
-        if ($type instanceof ComplexType && !$type->getParent() && !$type->getAttributes() && count($type->getElements()) === 1) {
+        if ($type instanceof ComplexType && ! $type->getParent() && ! $type->getAttributes() && count($type->getElements()) === 1) {
             $elements = $type->getElements();
 
             return $this->isArrayElement(reset($elements));

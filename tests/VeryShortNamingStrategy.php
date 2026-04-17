@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests;
 
 use Doctrine\Inflector\InflectorFactory;
@@ -18,11 +20,11 @@ class VeryShortNamingStrategy extends ShortNamingStrategy
     {
         $name = $this->classify($type->getName());
 
-        if ($name && substr($name, -4) !== 'Type') {
+        if ($name && ! str_ends_with($name, 'Type')) {
             return $name . 'T';
         }
 
-        if (substr($name, -4) === 'Type') {
+        if (str_ends_with($name, 'Type')) {
             return substr($name, 0, -3);
         }
 

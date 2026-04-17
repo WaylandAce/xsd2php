@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Jms;
 
 use GoetasWebservices\XML\XSDReader\Schema\Attribute\Attribute;
 use GoetasWebservices\XML\XSDReader\Schema\Attribute\AttributeItem;
+use GoetasWebservices\XML\XSDReader\Schema\Attribute\AttributeSingle;
 use GoetasWebservices\XML\XSDReader\Schema\Element\Element;
 use GoetasWebservices\XML\XSDReader\Schema\Element\ElementItem;
 use GoetasWebservices\XML\XSDReader\Schema\Schema;
@@ -11,7 +14,6 @@ use GoetasWebservices\XML\XSDReader\Schema\Type\ComplexType;
 use GoetasWebservices\XML\XSDReader\Schema\Type\SimpleType;
 use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 use GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClass;
-use GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPProperty;
 
 class YamlValidatorConverter extends YamlConverter
 {
@@ -31,13 +33,13 @@ class YamlValidatorConverter extends YamlConverter
             }
 
             $properties = array_filter(array_map(function ($property) {
-                if (!empty($property['validation'])) {
+                if (! empty($property['validation'])) {
                     foreach ($property['validation'] as &$rule) {
                         foreach ($rule as $type => &$item) {
                             if ($type === 'Valid') {
                                 continue;
                             } else {
-                                if (!is_array($item)) {
+                                if (! is_array($item)) {
                                     $item = [];
                                 }
                                 $item['groups'] = ['xsd_rules'];
@@ -69,15 +71,13 @@ class YamlValidatorConverter extends YamlConverter
     /**
      * Load and convert XSD' restrictions to Symfony Validation Constraints
      * from a schema type.
-     *
-     * @param bool $arrayized
      */
     private function loadValidatorType(array &$property, Type $type, bool $arrayized = false): array
     {
         $rules = [];
 
         if (($restrictions = $type->getRestriction()) && $checks = $restrictions->getChecks()) {
-            $propertyType = isset($property['type']) ? $property['type'] : null;
+            $propertyType = $property['type'] ?? null;
             foreach ($checks as $key => $check) {
                 switch ($key) {
                     case 'enumeration':
@@ -85,34 +85,34 @@ class YamlValidatorConverter extends YamlConverter
                             'Choice' => [
                                 'choices' => array_map(function ($enum) use ($propertyType) {
                                     if ($propertyType === 'int') {
-                                        return (int)$enum['value'];
+                                        return (int) $enum['value'];
                                     }
                                     if ($propertyType === 'float') {
-                                        return (float)$enum['value'];
+                                        return (float) $enum['value'];
                                     }
                                     return $enum['value'];
                                 }, $check),
                             ],
                         ];
                         break;
-//                    fractionDigits totalDigits validation makes no sense in object validation
-//                    mainly because they are represented as floats
-//                    case 'fractionDigits':
-//                        foreach ($check as $item) {
-//                            if ($item['value']>0) {
-//                                $rules[] = [
-//                                    'Regex' => "/^\-?(\\d+\\.\\d{{$item['value']}})|\\d*$/"
-//                                ];
-//                            }
-//                        }
-//                        break;
-//                    case 'totalDigits':
-//                        foreach ($check as $item) {
-//                            $rules[] = [
-//                                'Regex' => "/^([^\d]*\d){{$item['value']}}[^\d]*$/"
-//                            ];
-//                        }
-//                        break;
+                        //                    fractionDigits totalDigits validation makes no sense in object validation
+                        //                    mainly because they are represented as floats
+                        //                    case 'fractionDigits':
+                        //                        foreach ($check as $item) {
+                        //                            if ($item['value']>0) {
+                        //                                $rules[] = [
+                        //                                    'Regex' => "/^\-?(\\d+\\.\\d{{$item['value']}})|\\d*$/"
+                        //                                ];
+                        //                            }
+                        //                        }
+                        //                        break;
+                        //                    case 'totalDigits':
+                        //                        foreach ($check as $item) {
+                        //                            $rules[] = [
+                        //                                'Regex' => "/^([^\d]*\d){{$item['value']}}[^\d]*$/"
+                        //                            ];
+                        //                        }
+                        //                        break;
                     case 'length':
                         foreach ($check as $item) {
                             $rules[] = [
@@ -147,48 +147,58 @@ class YamlValidatorConverter extends YamlConverter
                             // not supported by standard php regex implementation
                             // \p{IsBasicLatin} represents a range, but the expression might be alraedy in a range,
                             // so we try our best and detect it if is in a range or not
-                            $regexPattern =  $item['value'];
+                            $regexPattern = $item['value'];
                             $unicodeClasses = [
                                 '\p{IsBasicLatin}' => '\x{0000}-\x{007F}',
                                 '\p{IsLatin-1Supplement}' => '\x{0080}-\x{00FF}',
                             ];
                             foreach ($unicodeClasses as $from => $to) {
-                                if (preg_match('~\[.*'.preg_quote($from, '~').'.*\]~', $regexPattern)) {
+                                if (preg_match('~\[.*' . preg_quote($from, '~') . '.*\]~', $regexPattern)) {
                                     $regexPattern = str_replace($from, $to, $regexPattern);
                                 } else {
                                     $regexPattern = str_replace($from, "[$to]", $regexPattern);
                                 }
                             }
                             $rules[] = [
-                                'Regex' => ['pattern' => "~{$regexPattern}~u"],
+                                'Regex' => [
+                                    'pattern' => "~{$regexPattern}~u",
+                                ],
                             ];
                         }
                         break;
                     case 'maxExclusive':
                         foreach ($check as $item) {
                             $rules[] = [
-                                'LessThan' => ['value' => $item['value']],
+                                'LessThan' => [
+                                    'value' => $item['value'],
+                                ],
                             ];
                         }
                         break;
                     case 'maxInclusive':
                         foreach ($check as $item) {
                             $rules[] = [
-                                'LessThanOrEqual' => ['value' => $item['value']],
+                                'LessThanOrEqual' => [
+                                    'value' => $item['value'],
+                                ],
                             ];
                         }
                         break;
                     case 'minExclusive':
                         foreach ($check as $item) {
                             $rules[] = [
-                                'GreaterThan' => ['value' => $item['value']],
+                                'GreaterThan' => [
+                                    'value' => $item['value'],
+                                ],
                             ];
                         }
                         break;
                     case 'minInclusive':
                         foreach ($check as $item) {
                             $rules[] = [
-                                'GreaterThanOrEqual' => ['value' => $item['value']],
+                                'GreaterThanOrEqual' => [
+                                    'value' => $item['value'],
+                                ],
                             ];
                         }
                         break;
@@ -196,8 +206,8 @@ class YamlValidatorConverter extends YamlConverter
             }
         }
 
-        if (!$arrayized) {
-            $property['validation'] = array_merge(!empty($property['validation']) ? $property['validation'] : [], $rules);
+        if (! $arrayized) {
+            $property['validation'] = array_merge(! empty($property['validation']) ? $property['validation'] : [], $rules);
         }
 
         return $rules;
@@ -205,9 +215,7 @@ class YamlValidatorConverter extends YamlConverter
 
     /**
      * Load and convert XSD' restrictions to Symfony Validation Constraints
-     * from a schema element including required rule.
-     *
-     * @param bool $arrayize
+     * from a schema element including the required rule.
      */
     private function loadValidatorElement(array &$property, ElementItem $element): void
     {
@@ -215,7 +223,7 @@ class YamlValidatorConverter extends YamlConverter
         $type = $element->getType();
 
         $attrs = [];
-        $arrayized = strpos($property['type'], 'array<') === 0;
+        $arrayized = str_starts_with($property['type'], 'array<');
 
         if ($arrayized) {
             if ($itemOfArray = $this->isArrayNestedElement($type)) {
@@ -229,10 +237,10 @@ class YamlValidatorConverter extends YamlConverter
                     'max' => $itemOfArray->getMax(),
                 ];
             } elseif ($this->isArrayElement($element)) {
-//                $attrs = [
-//                    'min' => $element->getMin(),
-//                    'max' => $element->getMax()
-//                ];
+                //                $attrs = [
+                //                    'min' => $element->getMin(),
+                //                    'max' => $element->getMax()
+                //                ];
             }
         }
 
@@ -257,9 +265,11 @@ class YamlValidatorConverter extends YamlConverter
             ];
         }
         if ($arrayized && count($rules) > 0) {
-//            $rules[] = ['Valid' => null];
+            //            $rules[] = ['Valid' => null];
             $property['validation'][] = [
-                'All' => ['constraints' => $rules],
+                'All' => [
+                    'constraints' => $rules,
+                ],
             ];
         } elseif ($type instanceof ComplexType) {
             $property['validation'][] = [
@@ -270,10 +280,7 @@ class YamlValidatorConverter extends YamlConverter
 
     /**
      * Load and convert XSD' restrictions to Symfony Validation Constraints
-     * from a schema attribute including required rule.
-     *
-     * @param AttributeItem $element
-     * @param bool $arrayize
+     * from a schema attribute including the required rule.
      */
     private function loadValidatorAttribute(array &$property, AttributeItem $attribute): void
     {
@@ -284,7 +291,7 @@ class YamlValidatorConverter extends YamlConverter
 
         // Required properties
         if ($attribute instanceof Attribute) {
-            if ($attribute->getUse() === Attribute::USE_REQUIRED) {
+            if ($attribute->getUse() === AttributeSingle::USE_REQUIRED) {
                 $property['validation'][] = [
                     'NotNull' => null,
                 ];
@@ -293,11 +300,8 @@ class YamlValidatorConverter extends YamlConverter
     }
 
     /**
-     * Override necessary to improve method to load validations from schema type.
-     *
-     * @param PHPClass $class
-     * @param array $data
-     * @param string $name
+     * Override necessary to improve method to load validations from a schema type.
+     * @throws \Exception
      */
     protected function visitSimpleType(&$class, &$data, SimpleType $type, $name): void
     {
@@ -306,7 +310,7 @@ class YamlValidatorConverter extends YamlConverter
         if ($restriction = $type->getRestriction()) {
             $parent = $restriction->getBase();
             if ($parent instanceof Type) {
-                if (!isset($data['properties']['__value'])) {
+                if (! isset($data['properties']['__value'])) {
                     $data['properties']['__value'] = [];
                 }
                 $this->loadValidatorType($data['properties']['__value'], $type);
@@ -315,12 +319,8 @@ class YamlValidatorConverter extends YamlConverter
     }
 
     /**
-     * Override necessary to improve method to load validations from schema element.
-     *
-     * @param PHPClass $class
-     * @param bool $arrayize
-     *
-     * @return PHPProperty
+     * Override necessary to improve a method to load validations from a schema element.
+     * @throws \Exception
      */
     protected function &visitElement(&$class, Schema $schema, ElementItem $element, bool $arrayize = true): array
     {
@@ -332,11 +332,8 @@ class YamlValidatorConverter extends YamlConverter
     }
 
     /**
-     * Override necessary to improve method to load validations from schema attribute.
-     *
-     * @param PHPClass $class
-     *
-     * @return array
+     * Override necessary to improve a method to load validations from a schema attribute.
+     * @throws \Exception
      */
     protected function &visitAttribute(&$class, Schema $schema, AttributeItem $attribute): array
     {
@@ -349,18 +346,15 @@ class YamlValidatorConverter extends YamlConverter
 
     /**
      * Responsible for handler all properties from extension types.
-     *
-     * @param PHPClass $class
-     * @param array $data
-     * @param string $parentName
+     * @throws \Exception
      */
-    protected function &handleClassExtension(&$class, &$data, Type $type, $parentName): array
+    protected function &handleClassExtension(&$class, &$data, Type $type, string $parentName): array
     {
         $property = parent::handleClassExtension($class, $data, $type, $parentName);
 
         $rules = $this->loadValidatorType($property, $type, false);
 
-        $property['validation'] = array_merge(!empty($property['validation']) ? $property['validation'] : [], $rules);
+        $property['validation'] = array_merge(! empty($property['validation']) ? $property['validation'] : [], $rules);
 
         return $property;
     }

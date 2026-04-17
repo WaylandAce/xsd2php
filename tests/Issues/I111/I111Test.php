@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I111;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
@@ -9,7 +12,10 @@ use PHPUnit\Framework\TestCase;
 
 class I111Test extends TestCase
 {
-    public function testNamespace()
+    /**
+     * @throws IOException
+     */
+    public function testNamespace(): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile(__DIR__ . '/data.xsd');

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\Validator;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlValidatorConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class Xsd2ValidatorTest extends TestCase
@@ -26,19 +30,16 @@ class Xsd2ValidatorTest extends TestCase
 
     /**
      * Return classes coverted through YamlValidatorConverter.
-     *
-     * @param string $xml
-     *
-     * @return array
+     * @throws IOException
      */
-    protected function getClasses($xml): array
+    protected function getClasses(string $xml): array
     {
         $schema = $this->reader->readString($xml);
 
         return $this->converter->convert([$schema]);
     }
 
-    public function getRestrictionsValidations(): array
+    public static function getRestrictionsValidations(): array
     {
         return [
             // enumeration / Choice->choices
@@ -123,7 +124,8 @@ class Xsd2ValidatorTest extends TestCase
                 '<xs:pattern value="\\p{IsBasicLatin}+\\p{IsLatin-1Supplement}"/>',
                 [
                     [
-                        'Regex' => [ // adds [] parenthesis
+                        'Regex' => [
+                            // adds [] parenthesis
                             'pattern' => '~[\x{0000}-\x{007F}]+[\x{0080}-\x{00FF}]~u',
                             'groups' => ['xsd_rules'],
                         ],
@@ -193,8 +195,9 @@ class Xsd2ValidatorTest extends TestCase
     }
 
     /**
-     * @dataProvider getRestrictionsValidations
+     * @throws IOException
      */
+    #[DataProvider('getRestrictionsValidations')]
     public function testSimpleTypeWithValidations($xsRestrictions, $ymlValidations)
     {
         $xml = '
@@ -225,9 +228,14 @@ class Xsd2ValidatorTest extends TestCase
                         'elementOne' => $ymlValidations,
                     ],
                 ],
-            ], $classes['Example\TypeOneType']);
+            ],
+            $classes['Example\TypeOneType']
+        );
     }
 
+    /**
+     * @throws IOException
+     */
     public function testComplexTypeWithRequired()
     {
         $content = '
@@ -256,10 +264,15 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testComplexTypeWithNoRequired()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithNoRequired(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -276,9 +289,10 @@ class Xsd2ValidatorTest extends TestCase
     }
 
     /**
-     * @dataProvider getRestrictionsValidations
+     * @throws IOException
      */
-    public function testComplexTypeWithRestrictionRequired($xsRestrictions, $ymlValidations)
+    #[DataProvider('getRestrictionsValidations')]
+    public function testComplexTypeWithRestrictionRequired($xsRestrictions, $ymlValidations): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -315,22 +329,26 @@ class Xsd2ValidatorTest extends TestCase
                         ),
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type'], print_r([array_merge(
-            $ymlValidations,
-            [
+            ],
+            $classes['Example\\ComplexType1Type'],
+            print_r([array_merge(
+                $ymlValidations,
                 [
-                    'NotNull' => [
-                        'groups' => ['xsd_rules'],
+                    [
+                        'NotNull' => [
+                            'groups' => ['xsd_rules'],
+                        ],
                     ],
-                ],
-            ]
-        ), $classes['Example\\ComplexType1Type']], 1));
+                ]
+            ), $classes['Example\\ComplexType1Type']], true)
+        );
     }
 
     /**
-     * @dataProvider getRestrictionsValidations
+     * @throws IOException
      */
-    public function testComplexTypeWithRestrictionNoRequired($xsRestrictions, $ymlValidations)
+    #[DataProvider('getRestrictionsValidations')]
+    public function testComplexTypeWithRestrictionNoRequired($xsRestrictions, $ymlValidations): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -358,10 +376,15 @@ class Xsd2ValidatorTest extends TestCase
                         'column1' => $ymlValidations,
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testComplexTypeWithArray_1()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithArray_1(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -389,10 +412,16 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type'], print_r($classes['Example\\ComplexType1Type'], 1));
+            ],
+            $classes['Example\\ComplexType1Type'],
+            print_r($classes['Example\\ComplexType1Type'], true)
+        );
     }
 
-    public function testComplexTypeWithArray_2()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithArray_2(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -420,10 +449,15 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testComplexTypeWithArray_3()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithArray_3(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -439,7 +473,10 @@ class Xsd2ValidatorTest extends TestCase
         $this->assertCount(0, $classes);
     }
 
-    public function testComplexTypeWithElementArrayRestriction()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithElementArrayRestriction(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -492,10 +529,16 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType2Type'], print_r($classes['Example\\ComplexType2Type'], 1));
+            ],
+            $classes['Example\\ComplexType2Type'],
+            print_r($classes['Example\\ComplexType2Type'], true)
+        );
     }
 
-    public function testComplexTypeWithArrayNestedRestriction()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithArrayNestedRestriction(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -554,7 +597,10 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\ProtocolsAType'], print_r($classes['Example\\ComplexType1Type\\ProtocolsAType'], 1));
+            ],
+            $classes['Example\\ComplexType1Type\\ProtocolsAType'],
+            print_r($classes['Example\\ComplexType1Type\\ProtocolsAType'], true)
+        );
 
         $this->assertEquals(
             [
@@ -579,10 +625,13 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type'], print_r($classes['Example\\ComplexType1Type'], 1));
+            ],
+            $classes['Example\\ComplexType1Type'],
+            print_r($classes['Example\\ComplexType1Type'], true)
+        );
     }
 
-    public function testComplexTypeWithElementArrayRestrictionNoRequired()
+    public function testComplexTypeWithElementArrayRestrictionNoRequired(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -635,10 +684,12 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType2Type']);
+            ],
+            $classes['Example\\ComplexType2Type']
+        );
     }
 
-    public function testComplexTypeWithArrayNestedRestrictionNoRequired_1()
+    public function testComplexTypeWithArrayNestedRestrictionNoRequired_1(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -692,7 +743,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\ProtocolsAType']);
+            ],
+            $classes['Example\\ComplexType1Type\\ProtocolsAType']
+        );
 
         $this->assertEquals(
             [
@@ -716,10 +769,12 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testComplexTypeWithArrayNestedRestrictionNoRequired_2()
+    public function testComplexTypeWithArrayNestedRestrictionNoRequired_2(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -773,7 +828,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\ProtocolsAType']);
+            ],
+            $classes['Example\\ComplexType1Type\\ProtocolsAType']
+        );
 
         $this->assertEquals(
             [
@@ -792,10 +849,15 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testComplexTypeWithNestedComplexRestrictionRequired()
+    /**
+     * @throws IOException
+     */
+    public function testComplexTypeWithNestedComplexRestrictionRequired(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -841,7 +903,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\ComplexType1Type']);
+            ],
+            $classes['Example\ComplexType1Type']
+        );
 
         $this->assertEquals(
             [
@@ -875,10 +939,12 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\DiagnostcsAType']);
+            ],
+            $classes['Example\\ComplexType1Type\\DiagnostcsAType']
+        );
     }
 
-    public function testComplexTypeWithArrayNestedComplexRestrictionRequired()
+    public function testComplexTypeWithArrayNestedComplexRestrictionRequired(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -936,7 +1002,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
 
         $this->assertEquals(
             [
@@ -970,7 +1038,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\ConsultAType\\DiagnostcsAType']);
+            ],
+            $classes['Example\\ComplexType1Type\\ConsultAType\\DiagnostcsAType']
+        );
 
         $this->assertEquals(
             [
@@ -993,10 +1063,12 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\ConsultAType']);
+            ],
+            $classes['Example\\ComplexType1Type\\ConsultAType']
+        );
     }
 
-    public function testComplexTypeWithExtension_1()
+    public function testComplexTypeWithExtension_1(): void
     {
         $content = '
             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
@@ -1059,7 +1131,9 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\FullpersoninfoType']);
+            ],
+            $classes['Example\\FullpersoninfoType']
+        );
 
         $this->assertEquals(
             [
@@ -1081,6 +1155,8 @@ class Xsd2ValidatorTest extends TestCase
                         ],
                     ],
                 ],
-            ], $classes['Example\\PersoninfoType']);
+            ],
+            $classes['Example\\PersoninfoType']
+        );
     }
 }

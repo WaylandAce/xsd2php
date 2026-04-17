@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Php\Structure;
 
 class PHPArg
@@ -11,7 +13,7 @@ class PHPArg
     protected string $name;
 
     protected bool $nullable = false;
-    
+
     protected mixed $default = null;
 
     public function __construct(string $name, ?PHPClass $type = null)
@@ -57,10 +59,10 @@ class PHPArg
     public function setNullable(bool $nullable): static
     {
         $this->nullable = $nullable;
-        
+
         return $this;
     }
-    
+
     public function getDefault(): mixed
     {
         return $this->default;

@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PathGenerator;
 
+use GoetasWebservices\Xsd\XsdToPhp\PathGenerator\PathGeneratorException;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator\Psr4PathGenerator;
 use Laminas\Code\Generator\ClassGenerator;
 use PHPUnit\Framework\TestCase;
@@ -19,12 +22,12 @@ class PHPPathGeneratorTest extends TestCase
         }
 
         $this->tmpdir = "$tmp/PathGeneratorTest";
-        if (!is_dir($this->tmpdir)) {
+        if (! is_dir($this->tmpdir)) {
             mkdir($this->tmpdir);
         }
     }
 
-    public function testNoNs()
+    public function testNoNs(): void
     {
         $this->expectException('GoetasWebservices\Xsd\XsdToPhp\PathGenerator\PathGeneratorException');
         $generator = new Psr4PathGenerator([
@@ -34,7 +37,10 @@ class PHPPathGeneratorTest extends TestCase
         $generator->getPath($class);
     }
 
-    public function testWriterLong()
+    /**
+     * @throws PathGeneratorException
+     */
+    public function testWriterLong(): void
     {
         $generator = new Psr4PathGenerator([
             'myns\\' => $this->tmpdir,
@@ -46,7 +52,10 @@ class PHPPathGeneratorTest extends TestCase
         $this->assertEquals($path, $this->tmpdir . '/foo/Bar.php');
     }
 
-    public function testWriter()
+    /**
+     * @throws PathGeneratorException
+     */
+    public function testWriter(): void
     {
         $generator = new Psr4PathGenerator([
             'myns\\' => $this->tmpdir,

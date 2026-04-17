@@ -8,3 +8,4 @@ vendor
 /.php_cs.cache
 
 /.phpunit.result.cache
+tests/Issues/I43/tmp/

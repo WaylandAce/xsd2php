@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I40;
 
 use DMS\PHPUnitExtensions\ArraySubset\Assert;
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class I40Test extends TestCase
 {
-    public function testMissingClass()
+    /**
+     * @throws IOException
+     */
+    public function testMissingClass(): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile(__DIR__ . '/data.xsd');
@@ -127,35 +134,36 @@ class I40Test extends TestCase
         Assert::assertArraySubset(array_keys($yamlItems), array_keys($phpClasses));
     }
 
-
-    public function getTestDetectSimpleParents()
+    public static function getTestDetectSimpleParents(): array
     {
-         return [
-             [__DIR__ . '/data_nested.xsd', 'string', [], []],
-             [__DIR__ . '/data_nested_array.xsd', 'array<string>', [
-                 'xml_list' =>
-                     array (
+        return [
+            [__DIR__ . '/data_nested.xsd', 'string', [], []],
+            [__DIR__ . '/data_nested_array.xsd', 'array<string>', [
+                'xml_list' =>
+                     [
                          'inline' => true,
                          'entry_name' => 'AdditionalIdentifierRootEl',
-                     ),
+                     ],
 
-             ], []],
-// this will be done in the future
-//             [__DIR__ . '/data_nested_array_nested.xsd', 'array<string>', [
-//                 'xml_list' =>
-//                     array (
-//                         'inline' => false,
-//                         'entry_name' => 'AdditionalIdentifierRootEl',
-//                         'skip_when_empty' => false
-//                     ),
-//
-//             ],[]],
-         ];
+            ], []],
+            // this will be done in the future
+            //             [__DIR__ . '/data_nested_array_nested.xsd', 'array<string>', [
+            //                 'xml_list' =>
+            //                     array (
+            //                         'inline' => false,
+            //                         'entry_name' => 'AdditionalIdentifierRootEl',
+            //                         'skip_when_empty' => false
+            //                     ),
+            //
+            //             ],[]],
+        ];
     }
+
     /**
-     * @dataProvider getTestDetectSimpleParents
+     * @throws IOException
      */
-    public function testDetectSimpleParents(string $f, string $t, array $extra, array $extraTypes)
+    #[DataProvider('getTestDetectSimpleParents')]
+    public function testDetectSimpleParents(string $f, string $t, array $extra, array $extraTypes): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile($f);
@@ -166,23 +174,23 @@ class I40Test extends TestCase
         $yamlItems = $yamlConv->convert([$schema]);
 
         $this->assertEquals($extraTypes + [
+            'Epa\Schema\AdditionalIdentifierRootEl' => [
                 'Epa\Schema\AdditionalIdentifierRootEl' => [
-                    'Epa\Schema\AdditionalIdentifierRootEl' => [
-                        'xml_root_name' => 'AdditionalIdentifierRootEl',
-                        'properties' => [
-                            '__value' => [
-                                'expose' => true,
-                                'xml_value' => true,
-                                'access_type' => 'public_method',
-                                'accessor' => [
-                                    'getter' => 'value',
-                                    'setter' => 'value',
-                                ],
-                                'type' => 'string',
+                    'xml_root_name' => 'AdditionalIdentifierRootEl',
+                    'properties' => [
+                        '__value' => [
+                            'expose' => true,
+                            'xml_value' => true,
+                            'access_type' => 'public_method',
+                            'accessor' => [
+                                'getter' => 'value',
+                                'setter' => 'value',
                             ],
+                            'type' => 'string',
                         ],
-                    ]
+                    ],
                 ],
+            ],
             'Epa\\Schema\\UserType' => [
                 'Epa\\Schema\\UserType' => [
                     'properties' => [
@@ -234,7 +242,7 @@ class I40Test extends TestCase
         ], $yamlItems);
     }
 
-    public function getTestDetectSimpleParentsWithAttributes()
+    public static function getTestDetectSimpleParentsWithAttributes(): array
     {
         return [
             [__DIR__ . '/data_nested_with_attributes.xsd', 'Epa\\Schema\\AdditionalIdentifierRootEl', []],
@@ -242,9 +250,10 @@ class I40Test extends TestCase
     }
 
     /**
-     * @dataProvider getTestDetectSimpleParentsWithAttributes
+     * @throws IOException
      */
-    public function testDetectSimpleParentsWithAttributesZ(string $f, string $t, array $extra)
+    #[DataProvider('getTestDetectSimpleParentsWithAttributes')]
+    public function testDetectSimpleParentsWithAttributesZ(string $f, string $t, array $extra): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile($f);
@@ -322,7 +331,10 @@ class I40Test extends TestCase
         Assert::assertArraySubset(array_keys($yamlItems), array_keys($phpClasses));
     }
 
-    public function testDetectSimpleParentsWithAttributesInTheMiddle()
+    /**
+     * @throws IOException
+     */
+    public function testDetectSimpleParentsWithAttributesInTheMiddle(): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile(__DIR__ . '/data_nested_with_attributes_in_the_middle.xsd');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PHP;
 
 use GoetasWebservices\XML\XSDReader\Exception\IOException;
@@ -8,13 +10,13 @@ use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\ClassGenerator;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;
-use Laminas\Code\Generator\MethodGenerator;
 use PHPUnit\Framework\TestCase;
 
 class AnyTypePHPConversionTest extends TestCase
 {
     /**
      * @throws IOException
+     * @throws \Exception
      */
     protected function getYamlFiles($xml, array $types = []): array
     {
@@ -28,7 +30,7 @@ class AnyTypePHPConversionTest extends TestCase
 
         $reader = new SchemaReader();
 
-        if (!is_array($xml)) {
+        if (! is_array($xml)) {
             $xml = [
                 'schema.xsd' => $xml,
             ];
@@ -54,7 +56,7 @@ class AnyTypePHPConversionTest extends TestCase
         $generator = new ClassGenerator();
         $reader = new SchemaReader();
 
-        if (!is_array($xml)) {
+        if (! is_array($xml)) {
             $xml = [
                 'schema.xsd' => $xml,
             ];

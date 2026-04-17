@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator;
 
 use GoetasWebservices\Xsd\XsdToPhp\PathGenerator\PathGeneratorException;
@@ -17,7 +19,7 @@ class Psr4PathGenerator extends Psr4PathGeneratorBase implements PathGenerator
             if (str_starts_with(trim($php->getNamespaceName()) . '\\', $namespace)) {
                 $d = strtr(substr($php->getNamespaceName(), strlen($namespace)), '\\', '/');
                 $dir = rtrim($dir, '/') . '/' . $d;
-                if (!is_dir($dir) && !@mkdir($dir, 0777, true)) {
+                if (! is_dir($dir) && ! @mkdir($dir, 0777, true)) {
                     $error = error_get_last();
                     throw new PathGeneratorException("Can't create the '$dir' directory: '{$error['message']}'");
                 }

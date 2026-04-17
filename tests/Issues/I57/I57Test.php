@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I57;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\YamlConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
@@ -10,7 +13,10 @@ use PHPUnit\Framework\TestCase;
 
 class I57Test extends TestCase
 {
-    public function testMissingClass()
+    /**
+     * @throws IOException
+     */
+    public function testMissingClass(): void
     {
         $expectedItems = [
             0 => 'Epa\\Job',

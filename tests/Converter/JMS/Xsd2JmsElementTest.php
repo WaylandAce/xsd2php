@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\JMS;
+
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class Xsd2JmsElementTest extends Xsd2JmsBase
 {
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveTypeWithCdata($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveTypeWithCdata(string $xsType, string $phpName): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -24,9 +30,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
     }
 
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveTypeWithoutCdata($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveTypeWithoutCdata(string $xsType, string $phpName): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -42,9 +49,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
     }
 
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveType($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveType(string $xsType, string $phpName): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -58,9 +66,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
     }
 
     /**
-     * @dataProvider getPrimitiveTypeConversions
+     * @throws IOException
      */
-    public function testElementOfPrimitiveTypeAnon($xsType, $phpName)
+    #[DataProvider('getPrimitiveTypeConversions')]
+    public function testElementOfPrimitiveTypeAnon(string $xsType, string $phpName): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -78,9 +87,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
     }
 
     /**
-     * @dataProvider getBaseTypeConversions
+     * @throws IOException
      */
-    public function testElementOfBaseType($xsType, $phpName, $jmsType)
+    #[DataProvider('getBaseTypeConversions')]
+    public function testElementOfBaseType(string $xsType, string $phpName, string $jmsType): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -94,9 +104,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
     }
 
     /**
-     * @dataProvider getBaseTypeConversions
+     * @throws IOException
      */
-    public function testElementOfBaseTypeAnon($xsType, $phpName, $jmsType)
+    #[DataProvider('getBaseTypeConversions')]
+    public function testElementOfBaseTypeAnon(string $xsType, string $phpName, string $jmsType): void
     {
         $xml = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -112,7 +123,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
         $this->assertCount(1, $classes);
     }
 
-    public function testUnqualifiedNsQualifiedElement()
+    /**
+     * @throws IOException
+     */
+    public function testUnqualifiedNsQualifiedElement(): void
     {
         $xsd = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <xs:schema version="1.0" 
@@ -200,7 +214,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
         $this->assertEquals($expected, $classes);
     }
 
-    public function testUnqualifiedNs()
+    /**
+     * @throws IOException
+     */
+    public function testUnqualifiedNs(): void
     {
         $xsd = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <xs:schema version="1.0" 
@@ -285,7 +302,10 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
         $this->assertEquals($expected, $classes);
     }
 
-    public function testSetterNamingStrategy()
+    /**
+     * @throws IOException
+     */
+    public function testSetterNamingStrategy(): void
     {
         $xsd = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <xs:schema version="1.0"
@@ -324,6 +344,8 @@ class Xsd2JmsElementTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes);
+            ],
+            $classes
+        );
     }
 }

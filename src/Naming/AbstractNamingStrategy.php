@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Naming;
 
 use Doctrine\Inflector\InflectorFactory;
-use GoetasWebservices\XML\XSDReader\Schema\Element\Element;
 use GoetasWebservices\XML\XSDReader\Schema\Item;
-use GoetasWebservices\XML\XSDReader\Schema\Type\Type;
 
 abstract class AbstractNamingStrategy implements NamingStrategy
 {
@@ -92,7 +92,7 @@ abstract class AbstractNamingStrategy implements NamingStrategy
     public function getItemName(Item $item): string
     {
         $name = $this->classify($item->getName());
-        if (in_array(strtolower($name), $this->reservedWords)) {
+        if (in_array(strtolower($name), $this->reservedWords, true)) {
             $name .= 'Xsd';
         }
 

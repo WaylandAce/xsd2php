@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\PathGenerator;
 
 abstract class Psr4PathGenerator
@@ -16,7 +18,7 @@ abstract class Psr4PathGenerator
         $this->namespaces = $namespaces;
 
         foreach ($this->namespaces as $dir) {
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 mkdir($dir, 0777, true);
             }
         }

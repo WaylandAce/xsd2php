@@ -1,10 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\JMS;
+
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class Xsd2JmsGroupTest extends Xsd2JmsBase
 {
-    public function testGroupArray()
+    /**
+     * @throws IOException
+     */
+    public function testGroupArray(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com"> 
@@ -26,7 +34,10 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
         $this->assertArrayHasKey('Example\ComplexType1Type', $classes);
     }
 
-    public function testAutoDiscoveryTraits()
+    /**
+     * @throws IOException
+     */
+    public function testAutoDiscoveryTraits(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -43,7 +54,10 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
         $this->assertCount(0, $classes);
     }
 
-    public function testSomeAnonymous()
+    /**
+     * @throws IOException
+     */
+    public function testSomeAnonymous(): void
     {
         error_reporting(error_reporting() & ~E_NOTICE);
         $content = '
@@ -183,7 +197,9 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
 
         $this->assertEquals(
             [
@@ -206,10 +222,15 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type\\String2AType']);
+            ],
+            $classes['Example\\ComplexType1Type\\String2AType']
+        );
     }
 
-    public function testSomeAnonymousWithRefs()
+    /**
+     * @throws IOException
+     */
+    public function testSomeAnonymousWithRefs(): void
     {
         error_reporting(error_reporting() & ~E_NOTICE);
         $content = '
@@ -249,7 +270,10 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
         $this->assertSame('array<Example\Contacts\ContactsAType\ContactAType>', $book['properties']['contacts']['type']);
     }
 
-    public function testSomeInheritance()
+    /**
+     * @throws IOException
+     */
+    public function testSomeInheritance(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -306,7 +330,9 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
 
         $this->assertEquals(
             [
@@ -340,10 +366,12 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType2Type']);
+            ],
+            $classes['Example\\ComplexType2Type']
+        );
     }
 
-    public function getMaxOccurs()
+    public static function getMaxOccurs(): array
     {
         return [
             [
@@ -363,7 +391,7 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
         ];
     }
 
-    public function testArray()
+    public function testArray(): void
     {
         $content = '
              <xs:schema 
@@ -412,13 +440,16 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
     /**
-     * @dataProvider getMaxOccurs
+     * @throws IOException
      */
-    public function testMaxOccurs($max, $isArray)
+    #[DataProvider('getMaxOccurs')]
+    public function testMaxOccurs(?string $max, bool $isArray): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -453,10 +484,15 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testGeneralParts()
+    /**
+     * @throws IOException
+     */
+    public function testGeneralParts(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com"> 
@@ -606,10 +642,15 @@ class Xsd2JmsGroupTest extends Xsd2JmsBase
                         ],
                     ],
                 ],
-            ], $classes['Example\\ComplexType1Type']);
+            ],
+            $classes['Example\\ComplexType1Type']
+        );
     }
 
-    public function testListOfRestriction()
+    /**
+     * @throws IOException
+     */
+    public function testListOfRestriction(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">

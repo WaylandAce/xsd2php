@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Php\Structure;
 
 class PHPClass
@@ -15,7 +17,6 @@ class PHPClass
     protected ?PHPClass $extends = null;
 
     protected array $implements = [];
-
 
     protected array $checks = [];
 
@@ -69,7 +70,7 @@ class PHPClass
 
     public function getPhpType(): string
     {
-        if (!$this->getNamespace()) {
+        if (! $this->getNamespace()) {
             if ($this->isNativeType()) {
                 return $this->getName();
             }
@@ -82,7 +83,7 @@ class PHPClass
 
     public function isNativeType(): bool
     {
-        return !$this->getNamespace() && in_array($this->getName(), [
+        return ! $this->getNamespace() && in_array($this->getName(), [
             'string',
             'int',
             'float',
@@ -91,7 +92,7 @@ class PHPClass
             'callable',
 
             'mixed', //todo this is not a php type but it's needed for now to allow mixed return tags
-        ]);
+        ], true);
     }
 
     public function __construct(?string $name = null, ?string $namespace = null)
@@ -173,7 +174,7 @@ class PHPClass
 
     public function hasPropertyInHierarchy(string $name): bool
     {
-        if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && !$this->hasProperty($name))) {
+        if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && ! $this->hasProperty($name))) {
             return false;
         }
         if ($this->hasProperty($name)) {
@@ -188,7 +189,7 @@ class PHPClass
 
     public function getPropertyInHierarchy(string $name): ?PHPProperty
     {
-        if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && !$this->hasProperty($name))) {
+        if (count($this->getProperties()) > 1 || (count($this->getProperties()) > 0 && ! $this->hasProperty($name))) {
             return null;
         }
 

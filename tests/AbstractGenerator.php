@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests;
 
 use Composer\Autoload\ClassLoader;
 use GoetasWebservices\Xsd\XsdToPhp\AbstractConverter;
 use GoetasWebservices\Xsd\XsdToPhp\Jms\PathGenerator\Psr4PathGenerator as JmsPsr4PathGenerator;
+use GoetasWebservices\Xsd\XsdToPhp\Naming\NamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\ClassGenerator;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator\Psr4PathGenerator as PhpPsr4PathGenerator;
@@ -13,24 +16,28 @@ use GoetasWebservices\Xsd\XsdToPhp\Writer\PHPClassWriter;
 use GoetasWebservices\Xsd\XsdToPhp\Writer\PHPWriter;
 use JMS\Serializer\EventDispatcher\EventDispatcherInterface;
 use JMS\Serializer\Handler\HandlerRegistryInterface;
+use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 
 abstract class AbstractGenerator
 {
-    protected $targetNs = [];
-    protected $aliases = [];
-    protected $strictTypes;
+    protected array $targetNs = [];
 
-    protected $phpDir;
-    protected $jmsDir;
-    protected $validationDir;
+    protected array $aliases = [];
 
-    protected $namingStrategy;
+    protected bool $strictTypes;
 
-    private $loader;
+    protected string $phpDir;
 
+    protected string $jmsDir;
 
-    public function __construct(array $targetNs, array $aliases = [], $tmp = null, bool $strictTypes = false)
+    protected string $validationDir;
+
+    protected NamingStrategy $namingStrategy;
+
+    private ClassLoader $loader;
+
+    public function __construct(array $targetNs, array $aliases = [], ?string $tmp = null, bool $strictTypes = false)
     {
         $tmp = $tmp ?: sys_get_temp_dir();
 
@@ -50,32 +57,32 @@ abstract class AbstractGenerator
         }
     }
 
-    private static function delTree($dir)
+    private static function delTree(string $dir): void
     {
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             (is_dir("$dir/$file")) ? self::delTree("$dir/$file") : unlink("$dir/$file");
         }
 
-        return rmdir($dir);
+        rmdir($dir);
     }
 
-    protected function setNamespaces(AbstractConverter $converter)
+    protected function setNamespaces(AbstractConverter $converter): void
     {
         foreach ($this->targetNs as $xmlNs => $phpNs) {
             $converter->addNamespace($xmlNs, $phpNs);
         }
         foreach ($this->aliases as $alias) {
-            $converter->addAliasMapType(isset($alias[0]) ? $alias[0] : $alias['ns'], isset($alias[1]) ? $alias[1] : $alias['name'], isset($alias[2]) ? $alias[2] : $alias['php']);
+            $converter->addAliasMapType($alias[0] ?? $alias['ns'], $alias[1] ?? $alias['name'], $alias[2] ?? $alias['php']);
         }
     }
 
-    private function slug($str)
+    private function slug(string $str): string
     {
         return preg_replace('/[^a-z0-9]/', '_', strtolower($str));
     }
 
-    public function cleanDirectories()
+    public function cleanDirectories(): void
     {
         foreach ($this->targetNs as $phpNs) {
             $phpDir = $this->phpDir . '/' . $this->slug($phpNs);
@@ -86,15 +93,18 @@ abstract class AbstractGenerator
                 if (is_dir($dir)) {
                     self::delTree($dir);
                 }
-                if (!is_dir($dir)) {
+                if (! is_dir($dir)) {
                     mkdir($dir, 0777, true);
                 }
             }
         }
     }
 
-    public function buildSerializer($handlersCallback = null, array $metadataDirs = [], $listenersCallback = null)
-    {
+    public function buildSerializer(
+        $handlersCallback = null,
+        array $metadataDirs = [],
+        $listenersCallback = null
+    ): Serializer {
         $serializerBuilder = SerializerBuilder::create();
         $serializerBuilder->configureHandlers(function (HandlerRegistryInterface $h) use ($handlersCallback, $serializerBuilder) {
             $serializerBuilder->addDefaultHandlers();
@@ -115,7 +125,7 @@ abstract class AbstractGenerator
         }
 
         foreach ($metadataDirs as $php => $dir) {
-            if (!is_dir($dir)) {
+            if (! is_dir($dir)) {
                 mkdir($dir, 0777, true);
             }
             $serializerBuilder->addMetadataDir($dir, $php);
@@ -124,14 +134,14 @@ abstract class AbstractGenerator
         return $serializerBuilder->build();
     }
 
-    public function registerAutoloader()
+    public function registerAutoloader(): ClassLoader
     {
         $this->loader->register();
 
         return $this->loader;
     }
 
-    public function unRegisterAutoloader()
+    public function unRegisterAutoloader(): void
     {
         //$this->loader->unregister();
     }
@@ -139,7 +149,7 @@ abstract class AbstractGenerator
     /**
      * @param $items
      */
-    protected function writePHP(array $items)
+    protected function writePHP(array $items): void
     {
         $paths = [];
         foreach ($this->targetNs as $phpNs) {
@@ -149,14 +159,11 @@ abstract class AbstractGenerator
         $pathGenerator = new PhpPsr4PathGenerator($paths);
 
         $classWriter = new PHPClassWriter($pathGenerator);
-        $writer = new PHPWriter($classWriter, new ClassGenerator($this->strictTypes));
+        $writer = new PHPWriter($classWriter, new ClassGenerator());
         $writer->write($items);
     }
 
-    /**
-     * @param $items
-     */
-    protected function writeJMS(array $items)
+    protected function writeJMS(array $items): void
     {
         $paths = [];
         foreach ($this->targetNs as $phpNs) {
@@ -169,10 +176,7 @@ abstract class AbstractGenerator
         $writer->write($items);
     }
 
-    /**
-     * @param $items
-     */
-    protected function writeValidation(array $items)
+    protected function writeValidation(array $items): void
     {
         $paths = [];
         foreach ($this->targetNs as $phpNs) {

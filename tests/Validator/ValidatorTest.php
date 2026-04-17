@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Validator;
 
 use Composer\Autoload\ClassLoader;
@@ -27,16 +29,16 @@ class ValidatorTest extends TestCase
         $this->validator = $builder->getValidator();
     }
 
-    public function testNotNullViolations()
+    public function testNotNullViolations(): void
     {
         $object = new TestNotNullType();
         $violations = $this->validator->validate($object);
 
-        $this->assertEquals(1, count($violations));
+        $this->assertCount(1, $violations);
 
         $object->setValue('My value');
         $violations = $this->validator->validate($object);
 
-        $this->assertEquals(0, count($violations));
+        $this->assertCount(0, $violations);
     }
 }

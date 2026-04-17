@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I43;
 
 use GoetasWebservices\XML\XSDReader\SchemaReader;
@@ -10,6 +12,7 @@ class I43Test extends TestCase
 {
     /**
      * @group long
+     * @throws \Exception
      */
     public function testOpcGeneration(): void
     {

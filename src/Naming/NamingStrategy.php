@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Naming;
 
 use GoetasWebservices\XML\XSDReader\Schema\Item;

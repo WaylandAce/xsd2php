@@ -1,7 +1,8 @@
 <?php
 
-namespace GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator;
+declare(strict_types=1);
 
+namespace GoetasWebservices\Xsd\XsdToPhp\Php\PathGenerator;
 
 use Laminas\Code\Generator\ClassGenerator;
 

@@ -1,14 +1,21 @@
 <?php
+
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Issues\I138;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
+use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\PhpConverter;
-use GoetasWebservices\XML\XSDReader\SchemaReader;
 use PHPUnit\Framework\TestCase;
 
 class I138Test extends TestCase
 {
-    public function testChoice()
+    /**
+     * @throws IOException
+     */
+    public function testChoice(): void
     {
         $reader = new SchemaReader();
         $schema = $reader->readFile(__DIR__ . '/data.xsd');

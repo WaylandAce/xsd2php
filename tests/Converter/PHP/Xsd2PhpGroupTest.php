@@ -1,12 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter\PHP;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClassOf;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class Xsd2PhpGroupTest extends Xsd2PhpBase
 {
-    public function testAutoDiscoveryTraits()
+    /**
+     * @throws IOException
+     */
+    public function testAutoDiscoveryTraits(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -22,7 +29,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertCount(0, $classes);
     }
 
-    public function testGroupArray()
+    /**
+     * @throws IOException
+     */
+    public function testGroupArray(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
@@ -44,7 +54,7 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertInstanceOf('GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClass', $classes['Example\ComplexType1Type']);
     }
 
-    public function testSomeAnonymous()
+    public function testSomeAnonymous(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -114,7 +124,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertSame('\string', $a1Prop->getType()->getFullName());
     }
 
-    public function testSomeAnonymousWithRefs()
+    /**
+     * @throws IOException
+     */
+    public function testSomeAnonymousWithRefs(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
@@ -150,7 +163,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertSame($book->getProperty('contacts')->getType()->getArg()->getType()->getFullName(), $contactsContact->getFullName());
     }
 
-    public function testListOfRestriction()
+    /**
+     * @throws IOException
+     */
+    public function testListOfRestriction(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="http://www.example.com">
@@ -261,7 +277,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         }
     }
 
-    public function testSomeInheritance()
+    /**
+     * @throws IOException
+     */
+    public function testSomeInheritance(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -302,7 +321,7 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertEquals('string', $property->getType()->getName());
     }
 
-    public function getMaxOccurs()
+    public static function getMaxOccurs(): array
     {
         return [
             [null, false],
@@ -316,7 +335,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         ];
     }
 
-    public function testArray()
+    /**
+     * @throws IOException
+     */
+    public function testArray(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ex="http://www.example.com">
@@ -348,9 +370,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
     }
 
     /**
-     * @dataProvider getMaxOccurs
+     * @throws IOException
      */
-    public function testMaxOccurs($max, $isArray)
+    #[DataProvider('getMaxOccurs')]
+    public function testMaxOccurs($max, $isArray): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -366,7 +389,10 @@ class Xsd2PhpGroupTest extends Xsd2PhpBase
         $this->assertInstanceOf('GoetasWebservices\Xsd\XsdToPhp\Php\Structure\PHPClass', $complexType1 = $classes['Example\ComplexType1Type']);
     }
 
-    public function testGeneralParts()
+    /**
+     * @throws IOException
+     */
+    public function testGeneralParts(): void
     {
         $content = '
              <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">

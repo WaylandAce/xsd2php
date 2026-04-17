@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\Converter;
 
 use GoetasWebservices\Xsd\XsdToPhp\AbstractConverter;
@@ -18,7 +20,7 @@ class AbstractXsdConverterTest extends TestCase
         $this->converter = $this->getMockForAbstractClass(AbstractConverter::class, [new ShortNamingStrategy()]);
     }
 
-    public function testAliases()
+    public function testAliases(): void
     {
         $f = function () {
         };
@@ -31,7 +33,7 @@ class AbstractXsdConverterTest extends TestCase
         $this->assertSame($f, $exmpleHandlers['myType']);
     }
 
-    public function testDefaultAliases()
+    public function testDefaultAliases(): void
     {
         $handlers = $this->converter->getTypeAliases();
 
@@ -43,7 +45,7 @@ class AbstractXsdConverterTest extends TestCase
         $this->assertArrayHasKey('string', $defaultHandlers);
     }
 
-    public function testNamespaces()
+    public function testNamespaces(): void
     {
         $this->converter->addNamespace('http://www.example.com', 'some\php\ns');
 

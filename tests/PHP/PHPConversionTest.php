@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Tests\PHP;
 
+use GoetasWebservices\XML\XSDReader\Exception\IOException;
 use GoetasWebservices\XML\XSDReader\SchemaReader;
 use GoetasWebservices\Xsd\XsdToPhp\Naming\ShortNamingStrategy;
 use GoetasWebservices\Xsd\XsdToPhp\Php\ClassGenerator;
@@ -11,28 +14,26 @@ use PHPUnit\Framework\TestCase;
 class PHPConversionTest extends TestCase
 {
     /**
-     * @param mixed $xml
-     *
      * @return \Laminas\Code\Generator\ClassGenerator[]
+     * @throws IOException
      */
-    protected function getClasses($xml): array
+    protected function getClasses(string $xml): array
     {
-        $phpcreator = new PhpConverter(new ShortNamingStrategy());
-        $phpcreator->addNamespace('http://www.example.com', 'Example');
+        $phpConverter = new PhpConverter(new ShortNamingStrategy());
+        $phpConverter->addNamespace('http://www.example.com', 'Example');
 
         $generator = new ClassGenerator();
         $reader = new SchemaReader();
 
-        if (!is_array($xml)) {
-            $xml = [
-                'schema.xsd' => $xml,
-            ];
-        }
+        $xml = [
+            'schema.xsd' => $xml,
+        ];
+
         $schemas = [];
         foreach ($xml as $name => $str) {
             $schemas[] = $reader->readString($str, $name);
         }
-        $items = $phpcreator->convert($schemas);
+        $items = $phpConverter->convert($schemas);
 
         $classes = [];
         foreach ($items as $k => $item) {
@@ -44,7 +45,7 @@ class PHPConversionTest extends TestCase
         return $classes;
     }
 
-    public function testSimpleContent()
+    public function testSimpleContent(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"
@@ -71,7 +72,7 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('setCode'));
     }
 
-    public function testSimpleNoAttributesContent()
+    public function testSimpleNoAttributesContent(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"
@@ -96,7 +97,7 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('__toString'));
     }
 
-    public function testNoMulteplicity()
+    public function testNoMulteplicity(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"
@@ -119,6 +120,9 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($codegen->hasMethod('setId'));
     }
 
+    /**
+     * @throws IOException
+     */
     public function testMulteplicity(): void
     {
         $xml = '
@@ -150,7 +154,10 @@ class PHPConversionTest extends TestCase
         $this->assertEquals('int|string', $codegen->getMethod('unsetId')->getParameters()['index']->getType());
     }
 
-    public function testNestedMulteplicity()
+    /**
+     * @throws IOException
+     */
+    public function testNestedMulteplicity(): void
     {
         $xml = '
             <xs:schema 
@@ -196,7 +203,10 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($ary->hasMethod('addToIdA'));
     }
 
-    public function testMultipleArrayTypes()
+    /**
+     * @throws IOException
+     */
+    public function testMultipleArrayTypes(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"
@@ -231,7 +241,10 @@ class PHPConversionTest extends TestCase
         // this is not $items['Example\ArrayOfStrings']; important
     }
 
-    public function testSimpleMulteplicity()
+    /**
+     * @throws IOException
+     */
+    public function testSimpleMulteplicity(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.example.com">
@@ -257,7 +270,10 @@ class PHPConversionTest extends TestCase
         $this->assertTrue($single->hasMethod('setId'));
     }
 
-    public function testNillableElement()
+    /**
+     * @throws IOException
+     */
+    public function testNillableElement(): void
     {
         $xml = '
             <xs:schema targetNamespace="http://www.example.com"

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class Xsd2PhpExtension extends Extension
 {
@@ -14,10 +16,11 @@ class Xsd2PhpExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $xml = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $xml->load('services.xml');
+        $xml = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $xml->load('services.php');
 
         $configuration = new Configuration();
+
         $config = $this->processConfiguration($configuration, $configs);
         foreach ($configs as $subConfig) {
             $config = array_merge($config, $subConfig);
@@ -39,7 +42,7 @@ class Xsd2PhpExtension extends Extension
             $container->setDefinition('goetas_webservices.xsd2php.path_generator.' . $type, $definition);
 
             $pathGenerator = $container->getDefinition('goetas_webservices.xsd2php.path_generator.' . $type);
-            if (!empty($config['destinations_' . $type])) {
+            if (! empty($config['destinations_' . $type])) {
                 $pathGenerator->addMethodCall('setTargets', [$config['destinations_' . $type]]);
             }
 

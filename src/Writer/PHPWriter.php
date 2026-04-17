@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Writer;
 
 use GoetasWebservices\Xsd\XsdToPhp\Php\ClassGenerator;
@@ -14,10 +16,14 @@ class PHPWriter extends Writer implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     protected PHPClassWriter $classWriter;
+
     private ClassGenerator $generator;
 
-    public function __construct(PHPClassWriter $classWriter, ClassGenerator $generator, ?LoggerInterface $logger = null)
-    {
+    public function __construct(
+        PHPClassWriter $classWriter,
+        ClassGenerator $generator,
+        ?LoggerInterface $logger = null
+    ) {
         $this->generator = $generator;
         $this->classWriter = $classWriter;
         $this->logger = $logger ?: new NullLogger();

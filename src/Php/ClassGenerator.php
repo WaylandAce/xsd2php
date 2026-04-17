@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace GoetasWebservices\Xsd\XsdToPhp\Php;
 
 use Doctrine\Inflector\InflectorFactory;
@@ -98,7 +100,7 @@ class ClassGenerator
         $param = new ParameterGenerator('value');
         $param->setDefaultValue(null);
 
-        if (null !== $type && !$type->isNativeType()) {
+        if (null !== $type && ! $type->isNativeType()) {
             $param->setType($type->getPhpType());
         }
 
@@ -145,7 +147,7 @@ class ClassGenerator
         if ($type instanceof PHPClassOf) {
             $docblock->setTag($paramTag);
             $paramTag->setTypes($type->getArg()
-                    ->getType()->getPhpType() . '[]');
+                ->getType()->getPhpType() . '[]');
 
             if ($type->getArg()->getDefault() === []) {
                 $parameter->setType('array');
@@ -162,7 +164,7 @@ class ClassGenerator
             if ($type->isNativeType()) {
                 $parameter->setType($this->getTypeAsPhpString($type, $prop->getNullable()));
             } elseif ($p = $type->isSimpleType()) {
-                if (($t = $p->getType()) && !$t->isNativeType()) {
+                if (($t = $p->getType()) && ! $t->isNativeType()) {
                     $parameter->setType($t->getPhpType());
                 } elseif ($t) {
                     $parameter->setType($this->getTypeAsPhpString($t, $prop->getNullable()));
@@ -287,16 +289,16 @@ class ClassGenerator
         $parameter = new ParameterGenerator($propName);
         $tt = $type->getArg()->getType();
 
-        if (!$tt->isNativeType()) {
+        if (! $tt->isNativeType()) {
             if ($p = $tt->isSimpleType()) {
                 if (($t = $p->getType())) {
                     $paramTag->setTypes($t->getPhpType());
 
-                    if (!$t->isNativeType()) {
+                    if (! $t->isNativeType()) {
                         $parameter->setType($t->getPhpType());
                     }
                 }
-            } elseif (!$tt->isNativeType()) {
+            } elseif (! $tt->isNativeType()) {
                 $parameter->setType($tt->getPhpType());
             }
         }
@@ -325,7 +327,7 @@ class ClassGenerator
         $generatedProp = new PropertyGenerator($prop->getName());
         $generatedProp->setVisibility(PropertyGenerator::VISIBILITY_PRIVATE);
 
-        if (!$prop->getNullable()) {
+        if (! $prop->getNullable()) {
             $generatedProp->omitDefaultValue(true);
         }
 
@@ -339,7 +341,6 @@ class ClassGenerator
         $type = $prop->getType();
 
         if ($type instanceof PHPClassOf) {
-
             if ($type->getArg()->getDefault() === []) {
                 $generatedProp->setType(Generator\TypeGenerator::fromTypeString('array'));
                 $generatedProp->setDefaultValue($type->getArg()->getDefault(), PropertyValueGenerator::TYPE_ARRAY, PropertyValueGenerator::OUTPUT_SINGLE_LINE);
@@ -398,8 +399,8 @@ class ClassGenerator
             } else {
                 $class->setExtendedClass($extends->getFullName());
 
-                if ($extends->getNamespace() != $type->getNamespace()) {
-                    if ($extends->getName() == $type->getName()) {
+                if ($extends->getNamespace() !== $type->getNamespace()) {
+                    if ($extends->getName() === $type->getName()) {
                         $class->addUse($type->getExtends()->getFullName(), $extends->getName() . 'Base');
                     } else {
                         $class->addUse($extends->getFullName());
