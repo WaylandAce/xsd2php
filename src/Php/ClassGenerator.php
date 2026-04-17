@@ -129,8 +129,6 @@ class ClassGenerator
         $docblock = new DocBlockGenerator();
         $docblock->setWordWrap(false);
 
-        $docblock->setShortDescription('Sets a new ' . $prop->getName());
-
         if ($prop->getDoc()) {
             $docblock->setLongDescription($prop->getDoc());
         }
@@ -181,7 +179,10 @@ class ClassGenerator
         $methodBody .= '$this->' . $prop->getName() . ' = $' . $prop->getName() . ';' . PHP_EOL;
         $methodBody .= 'return $this;';
         $method->setBody($methodBody);
-        $method->setDocBlock($docblock);
+        if ($docblock->getTags()) {
+            $method->setDocBlock($docblock);
+        }
+
         $method->setParameter($parameter);
 
         if ($prop->getDefault() === null) {
@@ -198,7 +199,7 @@ class ClassGenerator
         if ($prop->getType() instanceof PHPClassOf) {
             $docblock = new DocBlockGenerator();
             $docblock->setWordWrap(false);
-            $docblock->setShortDescription('isset ' . $prop->getName());
+
             if ($prop->getDoc()) {
                 $docblock->setLongDescription($prop->getDoc());
             }
@@ -207,7 +208,9 @@ class ClassGenerator
             $paramIndex->setType('int|string');
 
             $method = new MethodGenerator('isset' . $inflector->classify($prop->getName()), [$paramIndex]);
-            $method->setDocBlock($docblock);
+            if ($docblock->getTags()) {
+                $method->setDocBlock($docblock);
+            }
             $method->setBody('return isset($this->' . $prop->getName() . '[$index]);');
             $method->setReturnType('bool');
             $generator->addMethodFromGenerator($method);
@@ -223,7 +226,10 @@ class ClassGenerator
             $paramIndex->setType('int|string');
 
             $method = new MethodGenerator('unset' . $inflector->classify($prop->getName()), [$paramIndex]);
-            $method->setDocBlock($docblock);
+            if ($docblock->getTags()) {
+                $method->setDocBlock($docblock);
+            }
+
             $method->setBody('unset($this->' . $prop->getName() . '[$index]);');
             $method->setReturnType('void');
             $generator->addMethodFromGenerator($method);
@@ -231,14 +237,15 @@ class ClassGenerator
 
         $docblock = new DocBlockGenerator();
         $docblock->setWordWrap(false);
-        $docblock->setShortDescription('Get the ' . $prop->getName());
 
         if ($prop->getDoc()) {
             $docblock->setLongDescription($prop->getDoc());
         }
 
         $method = new MethodGenerator('get' . $inflector->classify($prop->getName()));
-        $method->setDocBlock($docblock);
+        if ($docblock->getTags()) {
+            $method->setDocBlock($docblock);
+        }
         $method->setBody('return $this->' . $prop->getName() . ';');
 
         $tag = new ReturnTag('mixed');
@@ -273,14 +280,10 @@ class ClassGenerator
 
         $docblock = new DocBlockGenerator();
         $docblock->setWordWrap(false);
-        $docblock->setShortDescription("Adds as $propName");
 
         if ($prop->getDoc()) {
             $docblock->setLongDescription($prop->getDoc());
         }
-
-        $paramTag = new ParamTag($propName, $type->getArg()->getType()->getPhpType());
-        $docblock->setTag($paramTag);
 
         $inflector = InflectorFactory::create()->build();
         $method = new MethodGenerator('addTo' . $inflector->classify($prop->getName()));
@@ -292,8 +295,6 @@ class ClassGenerator
         if (! $tt->isNativeType()) {
             if ($p = $tt->isSimpleType()) {
                 if (($t = $p->getType())) {
-                    $paramTag->setTypes($t->getPhpType());
-
                     if (! $t->isNativeType()) {
                         $parameter->setType($t->getPhpType());
                     }
@@ -306,7 +307,10 @@ class ClassGenerator
         $methodBody = '$this->' . $prop->getName() . '[] = $' . $propName . ';' . PHP_EOL;
         $methodBody .= 'return $this;';
         $method->setBody($methodBody);
-        $method->setDocBlock($docblock);
+        if ($docblock->getTags()) {
+            $method->setDocBlock($docblock);
+        }
+
         $method->setParameter($parameter);
 
         $generator->addMethodFromGenerator($method);
