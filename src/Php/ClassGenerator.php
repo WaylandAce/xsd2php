@@ -163,7 +163,7 @@ class ClassGenerator
                 $parameter->setType($this->getTypeAsPhpString($type, $prop->getNullable()));
             } elseif ($p = $type->isSimpleType()) {
                 if (($t = $p->getType()) && ! $t->isNativeType()) {
-                    $parameter->setType($t->getPhpType());
+                    $parameter->setType($this->getTypeAsPhpString($t, $prop->getNullable()));
                 } elseif ($t) {
                     $parameter->setType($this->getTypeAsPhpString($t, $prop->getNullable()));
                 }
