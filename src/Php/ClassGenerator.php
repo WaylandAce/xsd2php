@@ -52,7 +52,9 @@ class ClassGenerator
         $paramTag->setTypes(($type ? $type->getPhpType() : 'mixed'));
 
         $param = new ParameterGenerator('value');
-        $param->setDefaultValue(null);
+        if ($prop->getNullable()) {
+            $param->setDefaultValue(null);
+        }
         if (null !== $type) {
             $param->setType($this->getTypeAsPhpString($type, $prop->getNullable()));
         } else {
@@ -145,7 +147,7 @@ class ClassGenerator
         if ($type instanceof PHPClassOf) {
             $docblock->setTag($paramTag);
             $paramTag->setTypes($type->getArg()
-                ->getType()->getPhpType() . '[]');
+                    ->getType()->getPhpType() . '[]');
 
             if ($type->getArg()->getDefault() === []) {
                 $parameter->setType('array');
